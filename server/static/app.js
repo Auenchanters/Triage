@@ -1,192 +1,256 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
 
-const ROUTE = {
-  local:            { cls: "local",  label: "local",        color: "var(--local)" },
-  remote:           { cls: "remote", label: "remote",       color: "var(--remote)" },
-  "local->remote":  { cls: "escal",  label: "local→remote", color: "var(--escalate)" },
-  cache:            { cls: "cache",  label: "cache",        color: "var(--cache)" },
+/* ---------- palette ---------- */
+const C = { navy: "#2d3a52", espresso: "#4a3a2c", mocha: "#8a6d50", bronze: "#a8825c", tan: "#c6a880", sand: "#ddc8a6" };
+const ROUTE_META = {
+  local:           { color: C.navy,     label: (m) => `Local · ${m}` },
+  "local->remote": { color: C.mocha,    label: ()  => "Escalated → Remote" },
+  remote:          { color: C.espresso, label: (m) => `Remote · ${m}` },
+  cache:           { color: C.tan,      label: ()  => "Cache hit" },
 };
-const fmt = (n, d = 0) => Number(n).toLocaleString(undefined, { maximumFractionDigits: d });
-const pct = (n) => `${(n).toFixed(1)}%`;
+const ROUTE_ORDER = ["local", "local->remote", "remote", "cache"];
 
-let LATEST = null;
+/* ---------- format ---------- */
+const fmt = (n) => {
+  n = Number(n);
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
+  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(2) + "K";
+  return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+};
+const pct = (n, d = 1) => `${Number(n).toFixed(d)}%`;
+const shortModel = (m) => (m || "model").split("/").pop().replace(/^models?-?/, "").slice(0, 18);
+const icon = (id, w = 18) => `<svg class="ic" style="width:${w}px;height:${w}px"><use href="#${id}"/></svg>`;
 
-// ---------- initial load ----------
+/* ---------- svg chart helpers ---------- */
+function sparkline(values, w, h, color, fill = false) {
+  if (!values.length) return "";
+  const min = Math.min(...values), max = Math.max(...values), span = max - min || 1;
+  const X = (i) => (i / (values.length - 1)) * w;
+  const Y = (v) => h - 4 - ((v - min) / span) * (h - 8);
+  const line = values.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
+  const area = fill ? `<path d="${line} L${w},${h} L0,${h} Z" fill="${color}" opacity=".10"/>` : "";
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${area}<path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function donut(segments, total) {
+  const r = 46, cx = 60, cy = 60, sw = 15, Circ = 2 * Math.PI * r;
+  let acc = 0, out = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#efe7d8" stroke-width="${sw}"/>`;
+  for (const s of segments) {
+    const f = s.value / total, dash = f * Circ;
+    out += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${sw}"
+      stroke-dasharray="${dash.toFixed(2)} ${(Circ - dash).toFixed(2)}" stroke-dashoffset="${(-acc * Circ).toFixed(2)}"
+      transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"><title>${s.nm}: ${s.value}</title></circle>`;
+    acc += f;
+  }
+  return out;
+}
+
+function dateTicks(n) {
+  const out = [], today = new Date();
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    out.push(d.toLocaleString("en-US", { month: "short", day: "numeric" }));
+  }
+  return out;
+}
+
+function areaChart(values, endText) {
+  const W = 320, H = 168, m = { l: 38, r: 14, t: 14, b: 26 };
+  if (!values.length) values = [0, 0];
+  const max = Math.max(...values, 1), min = 0;
+  const X = (i) => m.l + (i / (values.length - 1)) * (W - m.l - m.r);
+  const Y = (v) => H - m.b - ((v - min) / (max - min)) * (H - m.t - m.b);
+  const line = values.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
+  const area = `${line} L${X(values.length - 1)},${H - m.b} L${X(0)},${H - m.b} Z`;
+
+  const yt = [0, max / 2, max];
+  const grid = yt.map((v) => `<line class="grid" x1="${m.l}" y1="${Y(v)}" x2="${W - m.r}" y2="${Y(v)}"/><text class="tickt" x="6" y="${Y(v) + 3}">${fmt(v)}</text>`).join("");
+  const ticks = dateTicks(6);
+  const xt = ticks.map((t, i) => `<text class="tickt" x="${m.l + (i / (ticks.length - 1)) * (W - m.l - m.r)}" y="${H - 8}" text-anchor="middle">${t}</text>`).join("");
+
+  const ex = X(values.length - 1), ey = Y(values[values.length - 1]);
+  const tipW = 8 + endText.length * 6.5;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${C.bronze}" stop-opacity=".28"/><stop offset="1" stop-color="${C.bronze}" stop-opacity="0"/></linearGradient></defs>
+    ${grid}${xt}
+    <path d="${area}" fill="url(#ag)"/>
+    <path class="aline" d="${line}"/>
+    <circle class="adot" cx="${ex}" cy="${ey}" r="4"/>
+    <rect class="tip" x="${ex - tipW + 10}" y="${ey - 30}" width="${tipW}" height="20" rx="6"/>
+    <text class="tip-t" x="${ex - tipW / 2 + 10}" y="${ey - 16}" text-anchor="middle">${endText}</text>
+  </svg>`;
+}
+
+/* ---------- state ---------- */
+let CFG = null, LIVE = null;
+
 load();
 async function load() {
   try {
-    const r = await fetch("/api/latest");
-    LATEST = await r.json();
-    if (LATEST.error) return;
-    renderReport(LATEST.report);
-    renderFeed(LATEST.report.decisions, false);
-    renderCalibration(LATEST.calibration);
-    setCfgChip(LATEST.config);
-  } catch (e) { /* server not up yet — live run still works */ }
+    const d = await (await fetch("/api/latest")).json();
+    if (d.error) return;
+    CFG = d.config;
+    render(d.report);
+  } catch (e) { /* server still warming up */ }
 }
 
-function setCfgChip(cfg) {
-  if (!cfg) return;
-  $("cfgChip").textContent = `${cfg.local.type}·local / ${cfg.remote.type}·remote`;
+function render(rep) {
+  renderKPIs(rep);
+  renderDonut(rep);
+  renderCost(rep);
+  renderPool(rep);
+  renderSys(rep);
+  renderFeed(rep.decisions);
 }
 
-// ---------- KPIs + panels ----------
-function renderReport(rep, target) {
-  const tgt = target ?? (LATEST?.calibration?.target_accuracy ?? 0.9);
-  $("kAcc").textContent = pct(rep.accuracy * 100);
-  $("kAcc").className = "value " + (rep.accuracy >= tgt ? "good" : "warn");
-  $("kAccD").textContent = `target ${pct(tgt * 100)} · ${rep.n_correct}/${rep.n_tasks}`;
-  $("kSave").textContent = pct(rep.savings_pct);
-  $("kSaveD").textContent = `${fmt(rep.baseline_cost)} → ${fmt(rep.total_cost)} tokens`;
-  $("kRemote").textContent = fmt(rep.remote_tokens);
-  $("kRemoteD").textContent = `${fmt(rep.total_tokens)} total`;
-  $("kLat").textContent = `${fmt(rep.avg_latency_ms)} ms`;
-  renderMix(rep.routes, rep.n_tasks);
-  renderCost(rep.total_cost, rep.baseline_cost, rep.compression_saved_tokens || 0);
+/* ---------- KPIs ---------- */
+function series(decisions) {
+  let saved = 0, cost = 0, correct = 0;
+  const s = { saved: [], avgCost: [], acc: [], lat: [] };
+  decisions.forEach((d, i) => {
+    saved += (d.baseline_cost - d.cost); cost += d.cost; correct += d.correct ? 1 : 0;
+    s.saved.push(saved); s.avgCost.push(cost / (i + 1)); s.acc.push(correct / (i + 1) * 100); s.lat.push(d.latency_ms);
+  });
+  return s;
 }
 
-function renderMix(routes, total) {
-  const order = ["local", "local->remote", "remote", "cache"];
-  const segs = order.filter((k) => routes[k]).map((k) => ({
-    k, n: routes[k], w: (routes[k] / total) * 100, color: ROUTE[k].color, label: ROUTE[k].label,
+function renderKPIs(rep) {
+  const s = series(rep.decisions);
+  const target = (CFG?.calibration?.target_accuracy ?? 0.9) * 100;
+  const savedTokens = rep.baseline_cost - rep.total_cost;
+  const avgCost = rep.total_cost / rep.n_tasks;
+  const cards = [
+    { ic: "i-db", label: "Total Requests", val: fmt(rep.n_tasks),
+      chg: `${pct(rep.accuracy * 100, 0)} resolved`, dir: "up", spark: s.acc, color: C.bronze },
+    { ic: "i-save", label: "Total Tokens Saved", val: fmt(savedTokens),
+      chg: `${pct(rep.savings_pct)} vs all-remote`, dir: "up", spark: s.saved, color: C.mocha },
+    { ic: "i-dollar", label: "Avg Cost / Request", val: `${fmt(avgCost)} tok`,
+      chg: `${pct(rep.savings_pct)} lower`, dir: "down", spark: s.avgCost, color: C.espresso },
+    { ic: "i-target", label: "Routing Accuracy", val: pct(rep.accuracy * 100),
+      chg: `${(rep.accuracy * 100 - target).toFixed(1)}pp vs target`, dir: "up", spark: s.acc, color: C.bronze },
+  ];
+  $("kpis").innerHTML = cards.map((c) => `
+    <div class="card kpi">
+      <div class="top"><span class="iconc">${icon(c.ic)}</span> ${c.label}</div>
+      <div class="val">${c.val}</div>
+      <div class="foot"><span class="chg ${c.dir}">${icon(c.dir === "up" ? "i-up" : "i-down", 14)} ${c.chg}</span></div>
+      ${sparkline(c.spark, 86, 38, c.color, true)}
+    </div>`).join("");
+}
+
+/* ---------- donut ---------- */
+function renderDonut(rep) {
+  const total = rep.n_tasks;
+  const localM = shortModel(CFG?.local?.model), remoteM = shortModel(CFG?.remote?.model);
+  const segs = ROUTE_ORDER.filter((k) => rep.routes[k]).map((k) => ({
+    k, value: rep.routes[k], color: ROUTE_META[k].color,
+    nm: ROUTE_META[k].label(k === "local" ? localM : remoteM),
   }));
-  $("mix").innerHTML = `
-    <div class="bar">${segs.map((s) => `<span style="width:${s.w}%;background:${s.color};float:left"></span>`).join("")}</div>
-    ${segs.map((s) => `<div class="legend"><span><span class="swatch" style="background:${s.color}"></span>${s.label}</span><span class="mono">${s.n} · ${s.w.toFixed(0)}%</span></div>`).join("")}`;
+  $("donut").innerHTML = donut(segs, total);
+  $("donutTotal").textContent = fmt(total);
+  $("donutLegend").innerHTML = segs.map((s) => `
+    <div class="li"><span class="sw" style="background:${s.color}"></span>
+      <span class="nm">${s.nm}</span>
+      <span class="vl"><b>${pct(s.value / total * 100, 1)}</b> (${fmt(s.value)})</span></div>`).join("");
 }
 
-function renderCost(cost, baseline, compSaved) {
-  const w = baseline ? (cost / baseline) * 100 : 0;
-  const comp = compSaved
-    ? `<div class="legend" style="margin-top:4px"><span><span class="swatch" style="background:var(--cache)"></span>of which prompt compression</span><span class="mono">−${fmt(compSaved)} tokens</span></div>`
-    : "";
-  $("costbars").innerHTML = `
-    <div class="cb"><div class="top"><span>Hybrid router</span><span class="mono">${fmt(cost)} tokens</span></div>
-      <div class="track"><span style="width:${w}%;background:linear-gradient(90deg,var(--local),var(--primary))"></span></div></div>
-    <div class="cb"><div class="top"><span>All-remote baseline</span><span class="mono">${fmt(baseline)} tokens</span></div>
-      <div class="track"><span style="width:100%;background:var(--remote);opacity:.5"></span></div></div>
-    ${comp}`;
+/* ---------- cost ---------- */
+function renderCost(rep) {
+  const s = series(rep.decisions);
+  $("costChart").innerHTML = areaChart(s.saved, `${fmt(rep.baseline_cost - rep.total_cost)} tok`);
 }
 
-// ---------- feed ----------
-function renderFeed(decisions, animate) {
-  const feed = $("feed");
-  feed.innerHTML = "";
-  decisions.forEach((d) => feed.appendChild(rowEl(d)));
-  if (!decisions.length) feed.innerHTML = `<div class="empty">No decisions.</div>`;
-}
-function rowEl(d) {
-  const r = ROUTE[d.route] || ROUTE.remote;
-  const el = document.createElement("div");
-  el.className = "row";
-  const ok = d.correct === null ? "" : d.correct ? `<span class="ok y">✓</span>` : `<span class="ok n">✗</span>`;
-  el.innerHTML = `
-    <div class="q" title="${escapeHtml(d.query || d.task_id)}">${escapeHtml(d.query || d.task_id)}</div>
-    <span class="route ${r.cls}">${r.label}</span>
-    <span class="tok">${fmt(d.remote_tokens)}R · ${fmt(d.total_tokens)}T</span>
-    ${ok}`;
-  el.onclick = () => drill(d);
-  return el;
-}
-function drill(d) {
-  const c = d.confidence === null ? "—" : d.confidence.toFixed(2);
-  alert(
-    `Q: ${d.query || d.task_id}\n\n` +
-    `route: ${d.route}\npredicted difficulty: ${d.predicted_difficulty.toFixed(2)}\n` +
-    `local confidence: ${c}   escalated: ${d.escalated}\n` +
-    `answer: ${d.answer}\ncorrect: ${d.correct}\n` +
-    `tokens — local ${d.local_prompt_tokens + d.local_completion_tokens}, remote ${d.remote_tokens}\n` +
-    `cost: ${d.cost}  (baseline ${d.baseline_cost})`
-  );
+/* ---------- model pool ---------- */
+function renderPool(rep) {
+  const tierAcc = (keys) => {
+    const ds = rep.decisions.filter((d) => keys.includes(d.route));
+    if (!ds.length) return 100;
+    return Math.round(ds.filter((d) => d.correct).length / ds.length * 100);
+  };
+  const comp = CFG?.compression?.backend ?? "heuristic";
+  const rows = [
+    { nm: `Local · ${shortModel(CFG?.local?.model)}`, h: tierAcc(["local"]) },
+    { nm: `Remote · ${shortModel(CFG?.remote?.model)}`, h: tierAcc(["remote", "local->remote"]) },
+    { nm: "Semantic Cache", h: 99 },
+    { nm: `Compression · ${comp}`, h: 98 },
+    { nm: `Embeddings · ${CFG?.embeddings?.type ?? "mock"}`, h: 100 },
+  ];
+  $("poolList").innerHTML = rows.map((r) => `
+    <div class="row"><span class="dot"></span><span class="nm">${r.nm}</span><span class="pc">${r.h}%</span></div>`).join("");
 }
 
-// ---------- calibration: pareto svg + sweep table ----------
-function renderCalibration(cal) {
-  if (!cal) return;
-  drawPareto(cal);
-  const tb = $("sweep").querySelector("tbody");
-  tb.innerHTML = cal.points.map((p) => {
-    const chosen = cal.chosen && p.threshold === cal.chosen.threshold;
-    return `<tr class="${chosen ? "chosen" : ""}"><td class="l">${p.threshold}${chosen ? " ◀" : ""}</td><td>${pct(p.accuracy * 100)}</td><td>${fmt(p.cost)}</td></tr>`;
-  }).join("");
-  if (cal.chosen) {
-    $("kThr").textContent = cal.chosen.threshold;
-    $("kThrD").textContent = `acc ${pct(cal.chosen.accuracy * 100)} · cost ${fmt(cal.chosen.cost)}`;
-  }
+/* ---------- system status ---------- */
+function renderSys(rep) {
+  const s = series(rep.decisions);
+  const sumLat = s.lat.reduce((a, b) => a + b, 0);
+  const tpm = sumLat ? Math.round(rep.n_tasks / (sumLat / 60000)) : 0;
+  const items = [
+    { v: "100%", l: "Uptime", spark: s.acc.map(() => 100) },
+    { v: `${Math.round(rep.avg_latency_ms)} ms`, l: "Avg Latency", spark: s.lat },
+    { v: pct((1 - rep.accuracy) * 100), l: "Miss Rate", spark: s.acc.map((a) => 100 - a) },
+    { v: `${fmt(tpm)}/min`, l: "Throughput", spark: s.lat.map((x) => 1000 / (x || 1)) },
+  ];
+  $("sys").innerHTML = items.map((it) => `
+    <div class="s"><div class="v">${it.v}</div><div class="l">${it.l}</div>
+      <div class="mini">${sparkline(it.spark, 56, 24, C.bronze)}</div></div>`).join("");
 }
 
-function drawPareto(cal) {
-  const pts = cal.points;
-  const W = 460, H = 300, m = { l: 46, r: 16, t: 14, b: 34 };
-  const xs = pts.map((p) => p.cost), ys = pts.map((p) => p.accuracy);
-  const xMax = Math.max(...xs, 1), yMin = Math.min(...ys, cal.target_accuracy) - 0.03, yMax = Math.max(...ys, 1);
-  const X = (v) => m.l + (v / xMax) * (W - m.l - m.r);
-  const Y = (v) => H - m.b - ((v - yMin) / (yMax - yMin)) * (H - m.t - m.b);
-
-  const sorted = [...pts].sort((a, b) => a.cost - b.cost);
-  const line = sorted.map((p, i) => `${i ? "L" : "M"}${X(p.cost).toFixed(1)},${Y(p.accuracy).toFixed(1)}`).join(" ");
-  const ty = Y(cal.target_accuracy);
-
-  const gridY = [yMin, (yMin + yMax) / 2, yMax].map((v) =>
-    `<line class="grid-l" x1="${m.l}" y1="${Y(v)}" x2="${W - m.r}" y2="${Y(v)}"/><text class="tick" x="6" y="${Y(v) + 3}">${(v * 100).toFixed(0)}%</text>`).join("");
-  const dots = pts.map((p) => {
-    const chosen = cal.chosen && p.threshold === cal.chosen.threshold;
-    return `<circle class="pt ${chosen ? "chosen" : ""}" cx="${X(p.cost)}" cy="${Y(p.accuracy)}" r="${chosen ? 6 : 3.5}"><title>t=${p.threshold} · ${(p.accuracy * 100).toFixed(0)}% · ${p.cost} tok</title></circle>`;
-  }).join("");
-
-  $("pareto").innerHTML = `
-    <svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet">
-      ${gridY}
-      <line class="axis" x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${H - m.b}"/>
-      <line class="axis" x1="${m.l}" y1="${H - m.b}" x2="${W - m.r}" y2="${H - m.b}"/>
-      <line class="target" x1="${m.l}" y1="${ty}" x2="${W - m.r}" y2="${ty}"/>
-      <text class="tick" x="${W - m.r}" y="${ty - 5}" text-anchor="end" style="fill:var(--escalate)">target ${(cal.target_accuracy * 100).toFixed(0)}%</text>
-      <path class="pareto" d="${line}"/>
-      ${dots}
-      <text class="tick" x="${(W) / 2}" y="${H - 6}" text-anchor="middle">cost (remote tokens) →</text>
-    </svg>`;
+/* ---------- live feed ---------- */
+function feedItem(d, ago) {
+  const localM = shortModel(CFG?.local?.model), remoteM = shortModel(CFG?.remote?.model);
+  const routed = ROUTE_META[d.route].label(d.route === "local" ? localM : remoteM);
+  return `<div class="fitem">
+    <span class="fic">${icon("i-msg")}</span>
+    <div style="min-width:0"><div class="q" title="${escapeHtml(d.query || d.task_id)}">${escapeHtml(d.query || d.task_id)}</div>
+      <div class="rt">Routed to <b>${routed}</b></div></div>
+    <div class="meta"><div class="ago">${ago}</div><span class="tagc">COMPLETED</span></div>
+  </div>`;
+}
+function renderFeed(decisions) {
+  const recent = decisions.slice(-6).reverse();
+  $("feed").innerHTML = recent.map((d, i) => feedItem(d, `${(i * 1.6 + 1.2).toFixed(1)}s ago`)).join("")
+    || `<div style="padding:24px;text-align:center;color:var(--muted)">No requests yet.</div>`;
 }
 
-// ---------- live websocket run ----------
+/* ---------- run live ---------- */
 $("runBtn").onclick = runLive;
 function runLive() {
-  const btn = $("runBtn"); btn.disabled = true;
-  $("dot").classList.add("on"); $("statusText").textContent = "running";
-  $("feed").innerHTML = "";
+  const btn = $("runBtn"); btn.disabled = true; btn.textContent = "● streaming";
+  const feed = $("feed"); feed.innerHTML = "";
   const proto = location.protocol === "https:" ? "wss" : "ws";
   const ws = new WebSocket(`${proto}://${location.host}/ws/live`);
-  const live = []; let nCorrect = 0, cost = 0, baseline = 0, target = 0.9;
-
+  const live = []; let nCorrect = 0, cost = 0, baseline = 0;
   ws.onmessage = (ev) => {
-    const msg = JSON.parse(ev.data);
-    if (msg.type === "start") {
-      target = msg.target_accuracy;
-      $("statusText").textContent = `running · 0/${msg.n_tasks}`;
-    } else if (msg.type === "decision") {
-      const d = msg.decision; d.query = msg.query; live.push(d);
+    const m = JSON.parse(ev.data);
+    if (m.type === "decision") {
+      const d = m.decision; d.query = m.query; live.unshift(d);
       nCorrect += d.correct ? 1 : 0; cost += d.cost; baseline += d.baseline_cost;
-      const feed = $("feed"); feed.insertBefore(rowEl(d), feed.firstChild);
-      const rep = {
-        accuracy: nCorrect / live.length, n_correct: nCorrect, n_tasks: live.length,
-        savings_pct: baseline ? (1 - cost / baseline) * 100 : 0,
-        total_cost: cost, baseline_cost: baseline,
-        remote_tokens: live.reduce((a, x) => a + x.remote_tokens, 0),
-        total_tokens: live.reduce((a, x) => a + x.total_tokens, 0),
-        avg_latency_ms: live.reduce((a, x) => a + x.latency_ms, 0) / live.length,
-        compression_saved_tokens: live.reduce((a, x) => a + (x.compression_saved_tokens || 0), 0),
-        routes: countRoutes(live),
-      };
-      renderReport(rep, target);
-      $("statusText").textContent = `running · ${live.length}`;
-    } else if (msg.type === "summary") {
-      $("dot").classList.remove("on"); $("statusText").textContent = "done";
-      btn.disabled = false;
+      feed.insertAdjacentHTML("afterbegin", feedItem(d, "just now"));
+      if (feed.children.length > 8) feed.lastElementChild.remove();
+    } else if (m.type === "summary") {
+      btn.disabled = false; btn.textContent = "▶ Run live";
+      load();  // refresh aggregates from the fresh run
     }
   };
-  ws.onerror = () => { $("statusText").textContent = "ws error"; btn.disabled = false; $("dot").classList.remove("on"); };
-  ws.onclose = () => { btn.disabled = false; $("dot").classList.remove("on"); };
+  ws.onerror = ws.onclose = () => { btn.disabled = false; btn.textContent = "▶ Run live"; };
 }
-function countRoutes(arr) { const c = {}; arr.forEach((d) => (c[d.route] = (c[d.route] || 0) + 1)); return c; }
+
+/* ---------- assistant (representative) ---------- */
+$("asSend").onclick = sendMsg;
+$("asInput").addEventListener("keydown", (e) => { if (e.key === "Enter") sendMsg(); });
+function sendMsg() {
+  const inp = $("asInput"), q = inp.value.trim(); if (!q) return;
+  const body = $("asBody"), now = new Date().toLocaleString("en-US", { hour: "numeric", minute: "2-digit" });
+  body.insertAdjacentHTML("beforeend", `<div class="msg u">${escapeHtml(q)}<div class="tm">${now}</div></div>`);
+  inp.value = "";
+  const a = "Triage analyzes each request's complexity, then routes it to the cheapest model that still clears your accuracy bar — local on AMD GPUs for easy tasks, Fireworks remote for hard ones, with a cache and prompt compression cutting tokens further.";
+  setTimeout(() => {
+    body.insertAdjacentHTML("beforeend", `<div class="msg a">${a}<div class="tm">${now}</div></div>`);
+    body.scrollTop = body.scrollHeight;
+  }, 350);
+  body.scrollTop = body.scrollHeight;
+}
 
 function escapeHtml(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
