@@ -1,0 +1,45 @@
+# Offline dev defaults (mock providers). On Jul 6, switch types to fireworks/local
+# and set the revealed model names + endpoints. No code changes needed.
+
+local:
+  type: mock                 # -> local  (OpenAI-compatible vLLM-on-ROCm) at kickoff
+  model: mock-local
+  competence_easy: 0.95      # mock-only: simulated skill on easy tasks
+  competence_hard: 0.30      # mock-only: simulated skill on hard tasks
+  base_latency_ms: 40
+
+remote:
+  type: mock                 # -> fireworks  at kickoff
+  model: mock-remote
+  competence_easy: 0.99
+  competence_hard: 0.97
+  base_latency_ms: 350
+
+router:
+  easy_threshold: 0.30       # predicted difficulty <= -> trust local
+  hard_threshold: 0.80       # predicted difficulty >= -> straight to remote
+  escalate_threshold: 0.65   # calibrated operating point (cheapest >= target accuracy)
+
+cost:                        # remote-only by default; flip local weights >0 if
+  w_remote_prompt: 1.0       # scoring counts total tokens
+  w_remote_completion: 1.0
+  w_local_prompt: 0.0
+  w_local_completion: 0.0
+
+cache:
+  enabled: true
+  semantic: true
+  threshold: 0.92
+
+compression:                 # prompt compression on the billed remote path
+  backend: heuristic         # none | heuristic | llmlingua | headroom
+  min_tokens: 40             # never compress prompts shorter than this
+  rate: 0.5                  # llmlingua keep-rate (ignored by heuristic)
+
+calibration:
+  target_accuracy: 0.90
+
+embeddings:
+  type: mock                 # -> fireworks/local embeddings at kickoff
+
+results_dir: results

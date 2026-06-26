@@ -1,0 +1,13 @@
+# Engine core — light, so `pytest` runs with no network.
+pydantic>=2.6
+pyyaml>=6.0
+fastapi>=0.110
+uvicorn[standard]>=0.29
+# Real providers (used only on launch day; optional for offline dev).
+openai>=1.30          # OpenAI-compatible client for Fireworks + local vLLM server
+numpy>=1.26           # embedding kNN / semantic cache math
+
+# Launch-day token-saver extras (lazy-imported; not needed for offline dev/tests).
+# Enable the matching `compression.backend` in config, then install:
+#   pip install llmlingua        # Microsoft LLMLingua-2 prompt compression (2-5x)
+#   pip install headroom-ai      # reversible prefix/cache-stabilizing compression

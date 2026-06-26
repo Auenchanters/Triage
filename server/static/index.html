@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Triage · token-thrifty LLM router · AMD ACT II</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo">⚡</div>
+        <div>
+          <h1>Triage <span style="color:var(--muted);font-weight:400;font-size:14px">· token-thrifty LLM router</span></h1>
+          <div class="sub">AMD Developer Hackathon · ACT II — Track 1 · route each task to the cheapest model that still clears the bar</div>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="chip" id="status"><span class="dot" id="dot"></span><span id="statusText">idle</span></span>
+        <span class="chip mono" id="cfgChip">mock providers</span>
+        <button class="run" id="runBtn">▶ Run live</button>
+      </div>
+    </header>
+
+    <section class="kpis" id="kpis">
+      <div class="panel kpi"><div class="label">Accuracy</div><div class="value" id="kAcc">—</div><div class="delta" id="kAccD">target —</div></div>
+      <div class="panel kpi"><div class="label">Tokens saved</div><div class="value good" id="kSave">—</div><div class="delta" id="kSaveD">vs all-remote</div></div>
+      <div class="panel kpi"><div class="label">Remote tokens</div><div class="value" id="kRemote">—</div><div class="delta" id="kRemoteD">billed tier</div></div>
+      <div class="panel kpi"><div class="label">Avg latency</div><div class="value" id="kLat">—</div><div class="delta">per task</div></div>
+      <div class="panel kpi"><div class="label">Operating threshold</div><div class="value" id="kThr">—</div><div class="delta" id="kThrD">calibrated</div></div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Live routing decisions</h2>
+        <div class="feed" id="feed"><div class="empty">Run live, or load the last harness run below.</div></div>
+        <div class="legend-inline">
+          <span><span class="swatch" style="background:var(--local)"></span>local (free)</span>
+          <span><span class="swatch" style="background:var(--escalate)"></span>local→remote (escalated)</span>
+          <span><span class="swatch" style="background:var(--remote)"></span>remote</span>
+          <span><span class="swatch" style="background:var(--cache)"></span>cache</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Route mix</h2>
+        <div class="mix" id="mix"><div class="empty">—</div></div>
+        <h2 style="margin-top:22px">Cost vs all-remote baseline</h2>
+        <div class="costbars" id="costbars"></div>
+      </div>
+    </section>
+
+    <section class="grid bottom">
+      <div class="panel">
+        <h2>Calibration — cost vs accuracy (Pareto)</h2>
+        <div id="pareto"><div class="empty">Run the harness to populate the threshold sweep.</div></div>
+      </div>
+      <div class="panel">
+        <h2>Threshold sweep</h2>
+        <div style="max-height:340px;overflow:auto">
+          <table class="sweep" id="sweep"><thead><tr><th class="l">escalate&nbsp;t</th><th>accuracy</th><th>cost</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <footer>Cheapest route that clears the accuracy bar wins. Local on AMD GPUs (ROCm/vLLM) · remote on Fireworks AI.</footer>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

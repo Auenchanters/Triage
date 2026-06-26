@@ -1,0 +1,45 @@
+# Launch-day template (Jul 6). Copy to config/launch.yaml, fill in the REVEALED
+# model names, set FIREWORKS_API_KEY in the env, then:
+#   ROUTER_CONFIG=config/launch.yaml python -m eval.harness
+# No code changes — only this file + a tasks/ adapter for the revealed tasks.
+
+local:
+  type: local                              # OpenAI-compatible vLLM-on-ROCm server
+  model: <REVEALED_LOCAL_MODEL>
+  base_url: http://localhost:8001/v1
+  api_key_env: LOCAL_API_KEY               # usually unused; any value works
+
+remote:
+  type: fireworks
+  model: accounts/fireworks/models/<REVEALED_REMOTE_MODEL>
+  base_url: https://api.fireworks.ai/inference/v1
+  api_key_env: FIREWORKS_API_KEY
+
+router:
+  easy_threshold: 0.30
+  hard_threshold: 0.80
+  escalate_threshold: 0.65                 # re-run the sweep on real tasks to retune
+
+cost:                                      # confirm at kickoff: remote-only or total?
+  w_remote_prompt: 1.0
+  w_remote_completion: 1.0
+  w_local_prompt: 0.0
+  w_local_completion: 0.0
+
+cache:
+  enabled: true
+  semantic: true
+  threshold: 0.92
+
+compression:
+  backend: llmlingua                       # LLMLingua-2 on the AMD GPU; or heuristic/headroom
+  min_tokens: 60                           # only compress genuinely long prompts
+  rate: 0.5                                # keep ~50% of tokens (retune on real tasks)
+
+calibration:
+  target_accuracy: 0.90                    # set to the announced accuracy bar
+
+embeddings:
+  type: fireworks                          # or local
+
+results_dir: results

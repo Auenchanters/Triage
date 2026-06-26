@@ -1,0 +1,9 @@
+[project]
+name = "triage"
+version = "0.1.0"
+description = "Triage — token-thrifty hybrid LLM router. AMD Developer Hackathon ACT II, Track 1"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

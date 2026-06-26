@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      ROUTER_CONFIG: config/default.yaml   # swap to config/launch.example.yaml on Jul 6
+      # FIREWORKS_API_KEY: ${FIREWORKS_API_KEY}   # uncomment when going live
+    # volumes:
+    #   - ./results:/app/results            # persist traces across restarts
+
+  # ---- Launch day: local model on AMD GPUs (ROCm/vLLM), OpenAI-compatible. ----
+  # Uncomment and point config/local.base_url at http://local-model:8000/v1
+  # local-model:
+  #   image: rocm/vllm:latest
+  #   devices: ["/dev/kfd", "/dev/dri"]
+  #   security_opt: ["seccomp=unconfined"]
+  #   group_add: ["video"]
+  #   command: >
+  #     --model <REVEALED_LOCAL_MODEL> --port 8000 --dtype auto
+  #   ports: ["8001:8000"]
