@@ -23,6 +23,11 @@ class RouterCfg(BaseModel):
     easy_threshold: float = 0.30       # predicted difficulty <= this -> trust local
     hard_threshold: float = 0.80       # predicted difficulty >= this -> straight to remote
     escalate_threshold: float = 0.55   # local confidence < this -> escalate (THE calibration knob)
+    # Self-consistency (Wang et al. 2022): on a low-confidence local answer, draw a few
+    # more *local* samples and vote. Strong agreement -> accept local (saves remote tokens);
+    # disagreement -> escalate. 1 = single-pass (off, the original behavior).
+    self_consistency_samples: int = 1
+    consistency_accept: float = 0.75   # min agreement ratio to accept (0.75 = unanimous at K=3)
 
 
 class CostCfg(BaseModel):

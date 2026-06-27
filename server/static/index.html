@@ -74,19 +74,19 @@
           </details>
 
           <details class="menu">
-            <summary class="chip" title="Date range"><svg class="ic"><use href="#i-cal"/></svg><span id="rangeLbl">Last 7 days</span><svg class="ic sm"><use href="#i-chev"/></svg></summary>
+            <summary class="chip" title="Filter by difficulty tier"><svg class="ic"><use href="#i-sliders"/></svg><span id="tierLbl">All tiers</span><svg class="ic sm"><use href="#i-chev"/></svg></summary>
             <div class="pop">
-              <a class="pop-i row" data-range="Last 24 hours">Last 24 hours</a>
-              <a class="pop-i row" data-range="Last 7 days">Last 7 days</a>
-              <a class="pop-i row" data-range="Last 30 days">Last 30 days</a>
-              <a class="pop-i row" data-range="All time">All time</a>
+              <a class="pop-i row" data-tier="all" data-label="All tiers">All tiers</a>
+              <a class="pop-i row" data-tier="easy" data-label="Easy">Easy</a>
+              <a class="pop-i row" data-tier="medium" data-label="Medium">Medium</a>
+              <a class="pop-i row" data-tier="hard" data-label="Hard">Hard</a>
             </div>
           </details>
 
           <details class="menu">
             <summary class="chip user" title="Account"><span class="av">A</span><span>Admin</span><svg class="ic sm"><use href="#i-chev"/></svg></summary>
             <div class="pop">
-              <a class="pop-i row"><svg class="ic"><use href="#i-gear"/></svg>Settings</a>
+              <a class="pop-i row" id="settingsBtn"><svg class="ic"><use href="#i-gear"/></svg>Settings</a>
               <a class="pop-i row" id="themeBtn"><svg class="ic"><use href="#i-target"/></svg>Toggle contrast</a>
               <a class="pop-i row"><svg class="ic"><use href="#i-out"/></svg>Sign out</a>
             </div>
@@ -97,6 +97,50 @@
       <main id="page" class="page"><!-- screens render here --></main>
     </div>
   </div>
+
+  <!-- settings slide-over -->
+  <div id="scrim" class="scrim"></div>
+  <aside id="settings" class="drawer" aria-label="Settings">
+    <header class="drawer-h">
+      <h2>Settings</h2>
+      <button id="closeSettings" class="icon-btn" title="Close"><svg class="ic"><use href="#i-out"/></svg></button>
+    </header>
+    <div class="drawer-b">
+      <section class="set">
+        <div class="set-l"><b>Theme</b><span>Console dark or daylight</span></div>
+        <div class="seg2">
+          <button data-theme-set="dark">Dark</button>
+          <button data-theme-set="light">Light</button>
+        </div>
+      </section>
+      <section class="set">
+        <div class="set-l"><b>Accent</b><span>Highlight color</span></div>
+        <div class="swatches">
+          <button data-accent="blue" style="--sw:#5b8cff" title="Blue"></button>
+          <button data-accent="violet" style="--sw:#a78bfa" title="Violet"></button>
+          <button data-accent="cyan" style="--sw:#38bdf8" title="Cyan"></button>
+          <button data-accent="green" style="--sw:#34d399" title="Green"></button>
+        </div>
+      </section>
+      <section class="set">
+        <div class="set-l"><b>A/B stream speed</b><span>How fast the comparison plays</span></div>
+        <div class="seg2">
+          <button data-speed="slow">Slow</button>
+          <button data-speed="normal">Normal</button>
+          <button data-speed="fast">Fast</button>
+        </div>
+      </section>
+      <section class="set">
+        <div class="set-l"><b>High contrast</b><span>Stronger text &amp; borders</span></div>
+        <button id="set-hc" class="tgl" role="switch"><i></i></button>
+      </section>
+      <section class="set">
+        <div class="set-l"><b>Animations</b><span>Count-ups &amp; reveals (off = reduce motion)</span></div>
+        <button id="set-motion" class="tgl" role="switch"><i></i></button>
+      </section>
+      <p class="drawer-foot muted">Preferences are saved on this device.</p>
+    </div>
+  </aside>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/app.js" defer></script>

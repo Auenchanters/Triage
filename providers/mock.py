@@ -37,8 +37,12 @@ class MockProvider(ChatProvider):
         gold = str(ctx.get("gold", ""))
         difficulty = float(ctx.get("difficulty", 0.5))
         task_id = str(ctx.get("task_id", ""))
+        sample = int(ctx.get("sample", 0))  # self-consistency draw index
 
-        rng = random.Random(f"{self.name}:{task_id}")
+        # sample 0 keeps the original seed (preserves every existing outcome);
+        # extra samples vary the seed so a self-consistency vote is meaningful.
+        seed = f"{self.name}:{task_id}" if sample == 0 else f"{self.name}:{task_id}:{sample}"
+        rng = random.Random(seed)
         p = self._competence(difficulty)
         correct = rng.random() < p
         text = gold if correct else _distractor(gold, rng)

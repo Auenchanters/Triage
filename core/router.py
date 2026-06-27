@@ -9,7 +9,7 @@ from typing import Optional
 from cache.store import AnswerCache
 from core.budget import baseline_all_remote, cost
 from core.config import Config
-from core.strategies import cascade, confidence, predictive
+from core.strategies import cascade, confidence, predictive, verify
 from core.types import Decision, Task
 from prompts import compress
 from prompts.compressor import Compressor, NoCompressor, apply_compression
@@ -70,6 +70,22 @@ class Router:
             answer = lr.text
             if cascade.accept_local(conf, self.cfg.router):
                 route = "local"
+            elif self.cfg.router.self_consistency_samples > 1:
+                # 3b) low confidence -> draw more *local* samples and vote before
+                # paying for remote. Strong agreement = stable local -> accept.
+                samples = [lr]
+                for i in range(1, self.cfg.router.self_consistency_samples):
+                    sr = self.local.chat(msgs, max_tokens=budget, stop=stop,
+                                         temperature=0.7, context={**ctx, "sample": i})
+                    lp += sr.prompt_tokens
+                    lc += sr.completion_tokens
+                    latency += sr.latency_ms
+                    samples.append(sr)
+                maj, agreement, maj_conf = verify.vote(samples)
+                if agreement >= self.cfg.router.consistency_accept:
+                    route, answer, conf = "local", maj, max(conf, maj_conf)
+                else:
+                    escalated = True  # 4) escalate
             else:
                 escalated = True  # 4) escalate
 

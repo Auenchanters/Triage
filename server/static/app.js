@@ -7,50 +7,7 @@
 
 /* ---- baked-in snapshot (mirrors results/latest.json) so the page is
         fully rendered before any network call returns ---- */
-const SEED = {
-  report: {
-    accuracy: 0.9375, total_tokens: 2910, remote_tokens: 1118, total_cost: 1118,
-    baseline_cost: 3051, savings_pct: 63.356, compression_saved_tokens: 240,
-    avg_latency_ms: 238.3, n_correct: 30, n_tasks: 32,
-    routes: { local: 18, "local->remote": 12, remote: 1, cache: 1 },
-    decisions: [
-      { task_id: "t000", query: "What is the capital of France?", route: "local", cost: 0, baseline_cost: 47, total_tokens: 24, remote_tokens: 0, correct: true, confidence: 1.0, predicted_difficulty: 0.0 },
-      { task_id: "t005", query: "Chemical symbol for gold?", route: "local", cost: 0, baseline_cost: 52, total_tokens: 26, remote_tokens: 0, correct: true, confidence: 0.87, predicted_difficulty: 0.06 },
-      { task_id: "c001", query: "What is the capital of France?", route: "cache", cost: 0, baseline_cost: 47, total_tokens: 0, remote_tokens: 0, correct: true, confidence: 1.0, predicted_difficulty: 0.0 },
-      { task_id: "t002", query: "Boiling point of water in Celsius at sea level?", route: "local", cost: 0, baseline_cost: 58, total_tokens: 28, remote_tokens: 0, correct: true, confidence: 0.84, predicted_difficulty: 0.0 },
-      { task_id: "t010", query: "Who painted the Mona Lisa?", route: "local", cost: 0, baseline_cost: 61, total_tokens: 30, remote_tokens: 0, correct: true, confidence: 0.85, predicted_difficulty: 0.06 },
-      { task_id: "t007", query: "A shirt costs 80 after a 20% discount; original price?", route: "local->remote", cost: 91, baseline_cost: 152, total_tokens: 220, remote_tokens: 91, correct: true, confidence: 0.41, predicted_difficulty: 0.69 },
-      { task_id: "t008", query: "Multi-step: convert 3/8 to a percentage.", route: "local->remote", cost: 81, baseline_cost: 178, total_tokens: 182, remote_tokens: 81, correct: true, confidence: 0.44, predicted_difficulty: 0.44 },
-      { task_id: "t012", query: "From 1 to 20, how many times does the digit 1 appear?", route: "local->remote", cost: 88, baseline_cost: 147, total_tokens: 196, remote_tokens: 88, correct: true, confidence: 0.38, predicted_difficulty: 0.34 },
-      { task_id: "t015", query: "What is 1729 known as in math folklore?", route: "local->remote", cost: 76, baseline_cost: 189, total_tokens: 172, remote_tokens: 76, correct: false, confidence: 0.36, predicted_difficulty: 0.55 },
-      { task_id: "t018", query: "Define a 'taxicab number' and give the first one.", route: "local->remote", cost: 84, baseline_cost: 113, total_tokens: 188, remote_tokens: 84, correct: true, confidence: 0.40, predicted_difficulty: 0.34 },
-      { task_id: "e002", query: "Prove the sum of two odd integers is even.", route: "remote", cost: 94, baseline_cost: 132, total_tokens: 202, remote_tokens: 94, correct: true, confidence: 0.31, predicted_difficulty: 0.84 },
-      { task_id: "t021", query: "What is 12 x 12?", route: "local", cost: 0, baseline_cost: 44, total_tokens: 22, remote_tokens: 0, correct: true, confidence: 0.82, predicted_difficulty: 0.06 }
-    ]
-  },
-  calibration: {
-    chosen: { threshold: 0.65, accuracy: 0.90625, cost: 1118 },
-    target_accuracy: 0.9,
-    points: [
-      { threshold: 0.10, accuracy: 0.6875, cost: 119 },
-      { threshold: 0.20, accuracy: 0.71875, cost: 297 },
-      { threshold: 0.30, accuracy: 0.75, cost: 470 },
-      { threshold: 0.40, accuracy: 0.78125, cost: 612 },
-      { threshold: 0.45, accuracy: 0.8125, cost: 754 },
-      { threshold: 0.55, accuracy: 0.84375, cost: 932 },
-      { threshold: 0.65, accuracy: 0.90625, cost: 1118 },
-      { threshold: 0.75, accuracy: 0.90625, cost: 1300 },
-      { threshold: 0.85, accuracy: 0.90625, cost: 1402 },
-      { threshold: 0.90, accuracy: 0.90625, cost: 1519 }
-    ]
-  },
-  config: {
-    router: { escalate_threshold: 0.65, easy_threshold: 0.30, hard_threshold: 0.80 },
-    cache: { enabled: true, semantic: true },
-    compression: { backend: "heuristic" },
-    calibration: { target_accuracy: 0.9 }
-  }
-};
+const SEED = {"report": {"accuracy": 0.928571, "total_tokens": 6736, "remote_tokens": 1160, "total_cost": 1160.0, "baseline_cost": 4306.0, "savings_pct": 73.061, "compression_saved_tokens": 180, "avg_latency_ms": 249.9, "n_correct": 52, "n_tasks": 56, "routes": {"local": 35, "local->remote": 18, "remote": 1, "cache": 2}, "tier_stats": {"easy": {"n": 25, "n_correct": 24, "accuracy": 0.96}, "medium": {"n": 13, "n_correct": 10, "accuracy": 0.7692307692307693}, "hard": {"n": 18, "n_correct": 18, "accuracy": 1.0}}, "decisions": [{"task_id": "t000", "query": "What is the capital of France?", "route": "local", "cost": 0.0, "baseline_cost": 47.0, "total_tokens": 24, "remote_tokens": 0, "correct": true, "confidence": 1.0, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t001", "query": "What is 2 + 2?", "route": "local", "cost": 0.0, "baseline_cost": 31.0, "total_tokens": 20, "remote_tokens": 0, "correct": true, "confidence": 0.7348725812104259, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t002", "query": "Is the sky blue? Answer true or false.", "route": "local", "cost": 0.0, "baseline_cost": 29.0, "total_tokens": 26, "remote_tokens": 0, "correct": true, "confidence": 0.9218797417552065, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t003", "query": "Who wrote Romeo and Juliet?", "route": "local", "cost": 0.0, "baseline_cost": 118.0, "total_tokens": 26, "remote_tokens": 0, "correct": true, "confidence": 0.9735263158003151, "predicted_difficulty": 0.0625, "tier": "easy"}, {"task_id": "t004", "query": "Translate 'hello' to Spanish.", "route": "local", "cost": 0.0, "baseline_cost": 47.0, "total_tokens": 24, "remote_tokens": 0, "correct": true, "confidence": 0.9710297064894471, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t005", "query": "What is the chemical symbol for gold?", "route": "local", "cost": 0.0, "baseline_cost": 49.0, "total_tokens": 26, "remote_tokens": 0, "correct": true, "confidence": 0.872473837382356, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t006", "query": "How many continents are there?", "route": "local", "cost": 0.0, "baseline_cost": 35.0, "total_tokens": 24, "remote_tokens": 0, "correct": true, "confidence": 0.712800175332019, "predicted_difficulty": 0.0625, "tier": "easy"}, {"task_id": "t007", "query": "What is the capital of Japan?", "route": "local->remote", "cost": 24.0, "baseline_cost": 47.0, "total_tokens": 97, "remote_tokens": 24, "correct": true, "confidence": 0.4, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t008", "query": "Spell the word 'accommodate'.", "route": "local", "cost": 0.0, "baseline_cost": 47.0, "total_tokens": 25, "remote_tokens": 0, "correct": true, "confidence": 0.7872670251016104, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t009", "query": "What is 15 percent of 200?", "route": "local", "cost": 0.0, "baseline_cost": 34.0, "total_tokens": 23, "remote_tokens": 0, "correct": true, "confidence": 0.9016258766881455, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t010", "query": "Is 17 a prime number? true or false.", "route": "local", "cost": 0.0, "baseline_cost": 29.0, "total_tokens": 26, "remote_tokens": 0, "correct": true, "confidence": 0.8160360935073396, "predicted_difficulty": 5.551115123125783e-17, "tier": "medium"}, {"task_id": "t011", "query": "What is the largest planet in our solar system?", "route": "local", "cost": 0.0, "baseline_cost": 51.0, "total_tokens": 28, "remote_tokens": 0, "correct": false, "confidence": 0.970444883225851, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t012", "query": "Summarize: the cat sat on the mat because it was warm.", "route": "local", "cost": 0.0, "baseline_cost": 125.0, "total_tokens": 33, "remote_tokens": 0, "correct": true, "confidence": 0.8582970490324033, "predicted_difficulty": 0.1375, "tier": "medium"}, {"task_id": "t013", "query": "If a train travels 60 km in 1.5 hours, what is its speed in km/h?", "route": "local->remote", "cost": 87.0, "baseline_cost": 118.0, "total_tokens": 408, "remote_tokens": 87, "correct": true, "confidence": 0.6012684385341635, "predicted_difficulty": 0.08750000000000002, "tier": "medium"}, {"task_id": "t014", "query": "What is the derivative of x squared?", "route": "local", "cost": 0.0, "baseline_cost": 123.0, "total_tokens": 102, "remote_tokens": 0, "correct": false, "confidence": 0.6618194098362508, "predicted_difficulty": 0.0, "tier": "medium"}, {"task_id": "t015", "query": "Solve step by step: a shirt costs 80 after a 20 percent discount; original price?", "route": "local->remote", "cost": 91.0, "baseline_cost": 122.0, "total_tokens": 424, "remote_tokens": 91, "correct": true, "confidence": 0.31224779555895477, "predicted_difficulty": 0.6875, "tier": "hard"}, {"task_id": "t016", "query": "Prove that the sum of the first n odd numbers equals n squared, then give the value for n=5.", "route": "local->remote", "cost": 94.0, "baseline_cost": 153.0, "total_tokens": 436, "remote_tokens": 94, "correct": true, "confidence": 0.18017007323402656, "predicted_difficulty": 0.4375, "tier": "hard"}, {"task_id": "t017", "query": "Analyze the trade-offs of microservices vs a monolith and give the single best choice for a 2-person startup.", "route": "local->remote", "cost": 99.0, "baseline_cost": 241.0, "total_tokens": 457, "remote_tokens": 99, "correct": true, "confidence": 0.6036546559087332, "predicted_difficulty": 0.7250000000000001, "tier": "hard"}, {"task_id": "t018", "query": "A bat and a ball cost 1.10 in total. The bat costs 1.00 more than the ball. How much is the ball in cents?", "route": "local->remote", "cost": 97.0, "baseline_cost": 156.0, "total_tokens": 448, "remote_tokens": 97, "correct": true, "confidence": 0.48398198891317606, "predicted_difficulty": 0.5, "tier": "hard"}, {"task_id": "t019", "query": "Multi-step: convert 3/8 to a percentage.", "route": "local->remote", "cost": 81.0, "baseline_cost": 112.0, "total_tokens": 387, "remote_tokens": 81, "correct": true, "confidence": 0.4962361086607959, "predicted_difficulty": 0.575, "tier": "medium"}, {"task_id": "t020", "query": "What is the boiling point of water in Celsius at sea level?", "route": "local", "cost": 0.0, "baseline_cost": 42.0, "total_tokens": 31, "remote_tokens": 0, "correct": true, "confidence": 0.6859765177471048, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t021", "query": "Who painted the Mona Lisa?", "route": "local", "cost": 0.0, "baseline_cost": 118.0, "total_tokens": 26, "remote_tokens": 0, "correct": true, "confidence": 0.8480149147103431, "predicted_difficulty": 0.0625, "tier": "easy"}, {"task_id": "t022", "query": "Compare and justify: is recursion or iteration better for computing factorial of 5? give the number.", "route": "local", "cost": 0.0, "baseline_cost": 127.0, "total_tokens": 348, "remote_tokens": 0, "correct": true, "confidence": 0.33950599959210975, "predicted_difficulty": 0.7, "tier": "hard"}, {"task_id": "t023", "query": "What is the square root of 144?", "route": "local", "cost": 0.0, "baseline_cost": 35.0, "total_tokens": 24, "remote_tokens": 0, "correct": true, "confidence": 0.7442636164703619, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "t024", "query": "Reason carefully: how many times does the digit 1 appear from 1 to 20?", "route": "local", "cost": 0.0, "baseline_cost": 147.0, "total_tokens": 324, "remote_tokens": 0, "correct": true, "confidence": 0.36517592049060554, "predicted_difficulty": 0.675, "tier": "hard"}, {"task_id": "e000", "query": "What is 1729?", "route": "local", "cost": 0.0, "baseline_cost": 189.0, "total_tokens": 288, "remote_tokens": 0, "correct": true, "confidence": 0.40071402379956794, "predicted_difficulty": 0.0, "tier": "hard"}, {"task_id": "e001", "query": "Considering everything, and taking your time to reason carefully and step by step about this question, could you kindly tell me what two plus two equals in the end?", "route": "local", "cost": 0.0, "baseline_cost": 69.0, "total_tokens": 58, "remote_tokens": 0, "correct": true, "confidence": 0.8900469442614565, "predicted_difficulty": 0.6499999999999999, "tier": "easy"}, {"task_id": "e002", "query": "Prove rigorously and step by step, then carefully analyze all the trade-offs involved, and finally derive the complete multi-step result of summing together the first ten consecutive odd numbers.", "route": "remote", "cost": 119.0, "baseline_cost": 150.0, "total_tokens": 119, "remote_tokens": 119, "correct": true, "confidence": null, "predicted_difficulty": 0.8500000000000001, "tier": "hard"}, {"task_id": "e003", "query": "Reason step by step: what is 12 percent of 250?", "route": "local->remote", "cost": 82.0, "baseline_cost": 113.0, "total_tokens": 388, "remote_tokens": 82, "correct": true, "confidence": 0.28878991175893676, "predicted_difficulty": 0.325, "tier": "hard"}, {"task_id": "e004", "query": "Reason about it: is 91 a prime number? true or false.", "route": "local->remote", "cost": 84.0, "baseline_cost": 107.0, "total_tokens": 399, "remote_tokens": 84, "correct": true, "confidence": 0.19731788726660457, "predicted_difficulty": 0.33749999999999997, "tier": "hard"}, {"task_id": "e005", "query": "List the first three prime numbers.", "route": "local", "cost": 0.0, "baseline_cost": 120.0, "total_tokens": 25, "remote_tokens": 0, "correct": true, "confidence": 0.8162451800887996, "predicted_difficulty": 0.075, "tier": "easy"}, {"task_id": "e006", "query": "List the first three prime numbers.", "route": "cache", "cost": 0.0, "baseline_cost": 120.0, "total_tokens": 0, "remote_tokens": 0, "correct": true, "confidence": 1.0, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "e00", "query": "What is the capital of Italy?", "route": "local", "cost": 0.0, "baseline_cost": 47.0, "total_tokens": 24, "remote_tokens": 0, "correct": true, "confidence": 0.8386450999298849, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "e01", "query": "What is 9 + 10?", "route": "local", "cost": 0.0, "baseline_cost": 31.0, "total_tokens": 20, "remote_tokens": 0, "correct": true, "confidence": 0.8856564084796439, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "e02", "query": "Is water wet? Answer true or false.", "route": "local->remote", "cost": 25.0, "baseline_cost": 28.0, "total_tokens": 102, "remote_tokens": 25, "correct": true, "confidence": 0.32331441655579607, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "e03", "query": "How many days are in a week?", "route": "local", "cost": 0.0, "baseline_cost": 35.0, "total_tokens": 24, "remote_tokens": 0, "correct": true, "confidence": 0.9209723530732867, "predicted_difficulty": 0.0875, "tier": "easy"}, {"task_id": "e04", "query": "What is the capital of Germany?", "route": "local", "cost": 0.0, "baseline_cost": 47.0, "total_tokens": 24, "remote_tokens": 0, "correct": true, "confidence": 0.8246132080996894, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "e05", "query": "Translate 'thank you' to French.", "route": "local", "cost": 0.0, "baseline_cost": 48.0, "total_tokens": 25, "remote_tokens": 0, "correct": true, "confidence": 1.0, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "e06", "query": "What is 100 divided by 4?", "route": "local", "cost": 0.0, "baseline_cost": 34.0, "total_tokens": 23, "remote_tokens": 0, "correct": true, "confidence": 0.6901957471365102, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "e07", "query": "Who is the author of the Harry Potter books?", "route": "local", "cost": 0.0, "baseline_cost": 123.0, "total_tokens": 30, "remote_tokens": 0, "correct": true, "confidence": 0.8365127033989549, "predicted_difficulty": 0.0, "tier": "easy"}, {"task_id": "m00", "query": "A shirt costs $40 and is 25% off. What is the sale price in dollars?", "route": "local", "cost": 0.0, "baseline_cost": 45.0, "total_tokens": 34, "remote_tokens": 0, "correct": false, "confidence": 0.7766714934210207, "predicted_difficulty": 0.08750000000000002, "tier": "medium"}, {"task_id": "m01", "query": "What is the next number in the sequence 2, 4, 8, 16?", "route": "local", "cost": 0.0, "baseline_cost": 41.0, "total_tokens": 30, "remote_tokens": 0, "correct": true, "confidence": 0.8016444072596649, "predicted_difficulty": 0.04999999999999999, "tier": "medium"}, {"task_id": "m02", "query": "How many minutes are there in 3.5 hours?", "route": "local", "cost": 0.0, "baseline_cost": 38.0, "total_tokens": 81, "remote_tokens": 0, "correct": true, "confidence": 0.5844775928063944, "predicted_difficulty": 0.30000000000000004, "tier": "medium"}, {"task_id": "m03", "query": "What is 7 factorial?", "route": "local->remote", "cost": 22.0, "baseline_cost": 33.0, "total_tokens": 88, "remote_tokens": 22, "correct": true, "confidence": 0.607079765651339, "predicted_difficulty": 0.0, "tier": "medium"}, {"task_id": "m04", "query": "If a rectangle is 8 by 5, what is its area?", "route": "local", "cost": 0.0, "baseline_cost": 38.0, "total_tokens": 27, "remote_tokens": 0, "correct": true, "confidence": 0.8938542505805754, "predicted_difficulty": 0.03750000000000003, "tier": "medium"}, {"task_id": "m05", "query": "What is the sum of the first 10 positive integers?", "route": "local", "cost": 0.0, "baseline_cost": 40.0, "total_tokens": 29, "remote_tokens": 0, "correct": true, "confidence": 0.7891618819491665, "predicted_difficulty": 0.025000000000000022, "tier": "medium"}, {"task_id": "m06", "query": "Who developed the theory of general relativity?", "route": "local", "cost": 0.0, "baseline_cost": 123.0, "total_tokens": 30, "remote_tokens": 0, "correct": true, "confidence": 0.6979534397034722, "predicted_difficulty": 0.0875, "tier": "medium"}, {"task_id": "m07", "query": "What is 15 percent of 80?", "route": "local", "cost": 0.0, "baseline_cost": 34.0, "total_tokens": 23, "remote_tokens": 0, "correct": false, "confidence": 0.7543238045161184, "predicted_difficulty": 0.0, "tier": "medium"}, {"task_id": "h00", "query": "A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost in cents?", "route": "cache", "cost": 0.0, "baseline_cost": 56.0, "total_tokens": 0, "remote_tokens": 0, "correct": true, "confidence": 1.0, "predicted_difficulty": 0.0, "tier": "hard"}, {"task_id": "h01", "query": "How many times does the digit 7 appear in the integers from 1 to 100?", "route": "local->remote", "cost": 34.0, "baseline_cost": 45.0, "total_tokens": 136, "remote_tokens": 34, "correct": true, "confidence": 0.33950988056435805, "predicted_difficulty": 0.3875, "tier": "hard"}, {"task_id": "h02", "query": "How many trailing zeros are in 25 factorial?", "route": "local->remote", "cost": 28.0, "baseline_cost": 39.0, "total_tokens": 112, "remote_tokens": 28, "correct": true, "confidence": 0.21625113914975685, "predicted_difficulty": 0.30000000000000004, "tier": "hard"}, {"task_id": "h03", "query": "What is the smallest positive integer divisible by both 6 and 8?", "route": "local->remote", "cost": 33.0, "baseline_cost": 44.0, "total_tokens": 132, "remote_tokens": 33, "correct": true, "confidence": 0.4856329492813879, "predicted_difficulty": 0.04999999999999999, "tier": "hard"}, {"task_id": "h04", "query": "Three friends split a $90 bill, but one pays twice as much as each of the others. How much does the bigger payer pay in dollars?", "route": "local->remote", "cost": 49.0, "baseline_cost": 60.0, "total_tokens": 196, "remote_tokens": 49, "correct": true, "confidence": 0.5459416960249751, "predicted_difficulty": 0.525, "tier": "hard"}, {"task_id": "h05", "query": "If you flip a fair coin 3 times, how many possible ordered outcome sequences are there?", "route": "local->remote", "cost": 38.0, "baseline_cost": 49.0, "total_tokens": 152, "remote_tokens": 38, "correct": true, "confidence": 0.392565221238392, "predicted_difficulty": 0.4, "tier": "hard"}, {"task_id": "h06", "query": "What is the number 1729 commonly known as in mathematics? (two words)", "route": "local->remote", "cost": 36.0, "baseline_cost": 129.0, "total_tokens": 148, "remote_tokens": 36, "correct": true, "confidence": 0.20685264519322039, "predicted_difficulty": 0.04999999999999999, "tier": "hard"}, {"task_id": "h07", "query": "A clock shows 3:15. What is the angle in degrees between the hour and minute hands?", "route": "local->remote", "cost": 37.0, "baseline_cost": 48.0, "total_tokens": 152, "remote_tokens": 37, "correct": true, "confidence": 0.04514604503353355, "predicted_difficulty": 0.4, "tier": "hard"}]}, "calibration": {"chosen": {"threshold": 0.65, "accuracy": 0.91071, "cost": 1205.0}, "target_accuracy": 0.9, "points": [{"threshold": 0.1, "accuracy": 0.69643, "cost": 156.0}, {"threshold": 0.15, "accuracy": 0.69643, "cost": 156.0}, {"threshold": 0.2, "accuracy": 0.71429, "cost": 334.0}, {"threshold": 0.25, "accuracy": 0.73214, "cost": 398.0}, {"threshold": 0.3, "accuracy": 0.75, "cost": 480.0}, {"threshold": 0.35, "accuracy": 0.78571, "cost": 630.0}, {"threshold": 0.4, "accuracy": 0.80357, "cost": 668.0}, {"threshold": 0.45, "accuracy": 0.82143, "cost": 692.0}, {"threshold": 0.5, "accuracy": 0.85714, "cost": 948.0}, {"threshold": 0.55, "accuracy": 0.875, "cost": 997.0}, {"threshold": 0.6, "accuracy": 0.875, "cost": 997.0}, {"threshold": 0.65, "accuracy": 0.91071, "cost": 1205.0}, {"threshold": 0.7, "accuracy": 0.91071, "cost": 1372.0}, {"threshold": 0.75, "accuracy": 0.91071, "cost": 1396.0}, {"threshold": 0.8, "accuracy": 0.94643, "cost": 1482.0}, {"threshold": 0.85, "accuracy": 0.94643, "cost": 1562.0}, {"threshold": 0.9, "accuracy": 0.94643, "cost": 1648.0}]}, "config": {"router": {"escalate_threshold": 0.65, "easy_threshold": 0.3, "hard_threshold": 0.8, "self_consistency_samples": 3}, "cache": {"enabled": true, "semantic": true}, "compression": {"backend": "heuristic"}, "calibration": {"target_accuracy": 0.9}}};
 
 /* ---------------------------------------------------------------- utils */
 const $  = (s, r = document) => r.querySelector(s);
@@ -62,7 +19,7 @@ const n0 = (n) => Math.round(n).toLocaleString();
 const ROUTE = { local: "local", "local->remote": "esc", remote: "remote", cache: "cache" };
 const ROUTE_LBL = { local: "LOCAL", "local->remote": "LOCAL→REMOTE", remote: "REMOTE", cache: "CACHE" };
 
-let STATE = { data: SEED, screen: "overview", busy: false };
+let STATE = { data: SEED, screen: "overview", busy: false, tier: "all", streamMs: 130 };
 
 /* normalize either {report,calibration,config} or a bare RunReport dict */
 function normalize(d) {
@@ -70,6 +27,35 @@ function normalize(d) {
   if (d.report) return { report: d.report, calibration: d.calibration || STATE.data.calibration, config: d.config || STATE.data.config };
   if (d.decisions) return { report: d, calibration: STATE.data.calibration, config: STATE.data.config };
   return null;
+}
+
+/* tier bucket of a decision (honors the tagged field, falls back to difficulty) */
+function tierOf(x) {
+  if (x.tier) return x.tier;
+  const dd = x.predicted_difficulty || 0;
+  return dd < 0.34 ? "easy" : dd < 0.67 ? "medium" : "hard";
+}
+
+/* When a tier is selected, derive a report from just that tier's decisions so
+   every KPI and chart reflects the filter. "all" passes the report through. */
+function scopedReport(d) {
+  const R = d.report;
+  if (STATE.tier === "all") return R;
+  const decs = (R.decisions || []).filter((x) => tierOf(x) === STATE.tier);
+  if (!decs.length) return R;
+  const sum = (f) => decs.reduce((s, x) => s + (f(x) || 0), 0);
+  const total_cost = sum((x) => x.cost), baseline_cost = sum((x) => x.baseline_cost);
+  const n_correct = decs.filter((x) => x.correct).length;
+  const routes = {};
+  decs.forEach((x) => { routes[x.route] = (routes[x.route] || 0) + 1; });
+  return {
+    ...R, decisions: decs, n_tasks: decs.length, n_correct,
+    accuracy: decs.length ? n_correct / decs.length : 0,
+    total_cost, baseline_cost,
+    savings_pct: baseline_cost ? (1 - total_cost / baseline_cost) * 100 : 0,
+    remote_tokens: sum((x) => x.remote_tokens), total_tokens: sum((x) => x.total_tokens),
+    routes,
+  };
 }
 
 /* rAF count-up — sets el text from 0 → target */
@@ -128,27 +114,58 @@ function areaSavings(decisions) {
 }
 
 function pareto(points, chosen, target) {
-  const W = 560, H = 230, l = 42, b = 30, t = 12, r = 12;
+  const W = 580, H = 256, l = 56, b = 46, t = 20, r = 22;
   const costs = points.map((p) => p.cost), accs = points.map((p) => p.accuracy);
-  const cMin = 0, cMax = Math.max(...costs) * 1.05;
-  const aMin = Math.min(...accs) - 0.04, aMax = 1.0;
-  const X = (c) => l + (c - cMin) / (cMax - cMin) * (W - l - r);
-  const Y = (a) => t + (aMax - a) / (aMax - aMin) * (H - t - b);
+  const cMax = (Math.max(...costs) * 1.08) || 1;
+  const aLo = Math.max(0, Math.min(...accs, target) - 0.05), aHi = 1.0;
+  const X = (c) => l + (c / cMax) * (W - l - r);
+  const Y = (a) => t + (aHi - a) / (aHi - aLo) * (H - t - b);
   const sorted = [...points].sort((p, q) => p.cost - q.cost);
+
+  // gridlines + axis tick labels (so the dots read as real numbers)
+  let grid = "", yt = "", xt = "";
+  const ny = 4;
+  for (let i = 0; i <= ny; i++) {
+    const a = aLo + (aHi - aLo) * i / ny, y = Y(a);
+    grid += `<line x1="${l}" y1="${y.toFixed(1)}" x2="${W - r}" y2="${y.toFixed(1)}" stroke="var(--line)" opacity=".5"/>`;
+    yt += `<text x="${l - 8}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" fill="var(--muted)" font-size="10.5" font-family="var(--mono)">${(a * 100).toFixed(0)}%</text>`;
+  }
+  for (let i = 0; i <= 4; i++) {
+    const c = cMax * i / 4, x = X(c);
+    xt += `<text x="${x.toFixed(1)}" y="${H - b + 16}" text-anchor="middle" fill="var(--muted)" font-size="10.5" font-family="var(--mono)">${n0(c)}</text>`;
+  }
+
   const path = sorted.map((p, i) => `${i ? "L" : "M"}${X(p.cost).toFixed(1)} ${Y(p.accuracy).toFixed(1)}`).join(" ");
-  const dots = sorted.map((p) => `<circle cx="${X(p.cost).toFixed(1)}" cy="${Y(p.accuracy).toFixed(1)}" r="3.4" fill="var(--accent)"/>`).join("");
+  const dots = sorted.map((p) => `<circle cx="${X(p.cost).toFixed(1)}" cy="${Y(p.accuracy).toFixed(1)}" r="3.6" fill="var(--accent)"><title>t=${p.threshold} · ${pct(p.accuracy)}% acc · ${n0(p.cost)} cost</title></circle>`).join("");
+
   const ty = Y(target);
-  const ch = chosen ? `<circle cx="${X(chosen.cost)}" cy="${Y(chosen.accuracy)}" r="7" fill="none" stroke="var(--green)" stroke-width="2.5"/>
-    <circle cx="${X(chosen.cost)}" cy="${Y(chosen.accuracy)}" r="3.4" fill="var(--green)"/>
-    <text x="${X(chosen.cost) + 12}" y="${Y(chosen.accuracy) - 8}" fill="var(--green)" font-size="11" font-weight="600" font-family="var(--mono)">chosen · t=${chosen.threshold}</text>` : "";
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}">
-    <line x1="${l}" y1="${ty.toFixed(1)}" x2="${W - r}" y2="${ty.toFixed(1)}" stroke="var(--amber)" stroke-width="1.4" stroke-dasharray="5 5"/>
-    <text x="${W - r}" y="${ty - 6}" text-anchor="end" fill="var(--amber)" font-size="10.5" font-family="var(--mono)">target ${pct(target)}%</text>
-    <line x1="${l}" y1="${t}" x2="${l}" y2="${H - b}" stroke="var(--line)"/>
-    <line x1="${l}" y1="${H - b}" x2="${W - r}" y2="${H - b}" stroke="var(--line)"/>
-    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".55"/>${dots}${ch}
-    <text x="${(l + W) / 2}" y="${H - 4}" text-anchor="middle" fill="var(--muted)" font-size="10.5">cost (remote tokens) →</text>
-    <text x="12" y="${(t + H - b) / 2}" fill="var(--muted)" font-size="10.5" transform="rotate(-90 12 ${(t + H - b) / 2})" text-anchor="middle">accuracy →</text>
+  const tline = `<line x1="${l}" y1="${ty.toFixed(1)}" x2="${W - r}" y2="${ty.toFixed(1)}" stroke="var(--amber)" stroke-width="1.6" stroke-dasharray="6 5"/>
+    <text x="${l + 4}" y="${(ty - 7).toFixed(1)}" fill="var(--amber)" font-size="11" font-weight="600" font-family="var(--mono)">target ${pct(target)}% accuracy</text>`;
+
+  // chosen point + a callout box that never overlaps the target label
+  let ch = "";
+  if (chosen) {
+    const cx = X(chosen.cost), cy = Y(chosen.accuracy);
+    const bw = 170, bh = 38;
+    const bx = clamp(cx - bw / 2, l + 2, W - r - bw);
+    let by = cy - bh - 16;
+    if (by < t) by = cy + 16;
+    ch = `<line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(bx + bw / 2).toFixed(1)}" y2="${(by + (by > cy ? 0 : bh)).toFixed(1)}" stroke="var(--green)" opacity=".5"/>
+      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="7.5" fill="none" stroke="var(--green)" stroke-width="2.5"/>
+      <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.6" fill="var(--green)"/>
+      <rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${bw}" height="${bh}" rx="7" fill="var(--panel-2)" stroke="var(--green)" stroke-width="1.2"/>
+      <text x="${(bx + 10).toFixed(1)}" y="${(by + 15).toFixed(1)}" fill="var(--green)" font-size="11" font-weight="700" font-family="var(--sans)">◆ chosen operating point</text>
+      <text x="${(bx + 10).toFixed(1)}" y="${(by + 30).toFixed(1)}" fill="var(--text-2)" font-size="10.5" font-family="var(--mono)">t=${chosen.threshold} · ${pct(chosen.accuracy)}% acc · ${n0(chosen.cost)} cost</text>`;
+  }
+
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    ${grid}${yt}${xt}
+    <line x1="${l}" y1="${t}" x2="${l}" y2="${H - b}" stroke="var(--line-2)"/>
+    <line x1="${l}" y1="${H - b}" x2="${W - r}" y2="${H - b}" stroke="var(--line-2)"/>
+    ${tline}
+    <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2.2" opacity=".7"/>${dots}${ch}
+    <text x="${((l + W - r) / 2).toFixed(1)}" y="${H - 6}" text-anchor="middle" fill="var(--muted)" font-size="11">remote-token cost  (cheaper ←)</text>
+    <text x="15" y="${((t + H - b) / 2).toFixed(1)}" fill="var(--muted)" font-size="11" transform="rotate(-90 15 ${((t + H - b) / 2).toFixed(1)})" text-anchor="middle">accuracy  (higher ↑)</text>
   </svg>`;
 }
 
@@ -179,6 +196,16 @@ function screenOverview(d) {
   const legend = [["local", "Local", "var(--green)"], ["cache", "Cache", "var(--cyan)"], ["local->remote", "Escalated", "var(--red)"], ["remote", "Remote", "var(--amber)"]]
     .map(([k, lbl, c]) => `<span><i style="background:${c}"></i>${lbl}<span class="n">${rc[k] || 0}</span></span>`).join("");
 
+  const ts = R.tier_stats || {};
+  const tierRow = ["easy", "medium", "hard"].map((name) => {
+    const s = ts[name] || { n: 0, n_correct: 0, accuracy: 0 };
+    const ok = s.accuracy >= cal.target_accuracy;
+    return `<div class="tier">
+      <div class="lh" style="display:flex;justify-content:space-between;font-size:13px"><b style="text-transform:capitalize">${name}</b><span class="mono ${ok ? "" : "muted"}">${pct(s.accuracy)}% · ${s.n_correct}/${s.n}</span></div>
+      <div class="bar"><i class="${ok ? "g" : "a"}" data-w="${(s.accuracy * 100).toFixed(0)}"></i></div>
+    </div>`;
+  }).join("");
+
   return `
     <div class="hero rise">
       <div>
@@ -190,8 +217,9 @@ function screenOverview(d) {
 
     <div class="grid k3" style="margin-top:16px">
       <div class="card col-2 rise" style="animation-delay:240ms">
-        <div class="card-h"><h3>Calibration — cost vs accuracy (Pareto frontier)</h3><span class="muted mono" style="font-size:12px">sweep ${cal.points.length} thresholds</span></div>
+        <div class="card-h"><h3>Picking the operating point</h3><span class="muted mono" style="font-size:12px">swept ${cal.points.length} thresholds</span></div>
         ${pareto(cal.points, cal.chosen, cal.target_accuracy)}
+        <p class="cap">Each <b style="color:var(--accent)">dot</b> is one confidence threshold we tested. Lower-left is cheaper; higher is more accurate. We pick the <b style="color:var(--green)">cheapest dot still above the ${pct(cal.target_accuracy)}% bar</b> — that's the shipped setting.</p>
       </div>
       <div class="card rise" style="animation-delay:300ms">
         <div class="card-h"><h3>Route split</h3></div>
@@ -222,6 +250,10 @@ function screenOverview(d) {
           </div>
           <p class="muted" style="font-size:12.5px;margin:2px 0 0">Triage answers the easy ${onDev} tasks on the local model for free and spends remote tokens only on the ${(rc["local->remote"] || 0) + (rc.remote || 0)} that actually need it — the leaderboard lever.</p>
         </div>
+      </div>
+      <div class="card rise" style="animation-delay:520ms;margin-top:16px">
+        <div class="card-h"><h3>Accuracy by difficulty tier</h3><span class="muted" style="font-size:12.5px">hard tasks escalate to remote — accuracy holds where it's tested hardest</span></div>
+        <div class="tiers">${tierRow}</div>
       </div>
     </div>`;
 }
@@ -313,7 +345,10 @@ const SCREENS = { overview: screenOverview, compare: screenCompare, routing: scr
 
 /* ---------------------------------------------------------------- render */
 function render() {
-  const d = STATE.data, id = STATE.screen;
+  const id = STATE.screen;
+  // overview + routing respect the tier filter; compare streams the full suite
+  const d = (STATE.tier === "all" || id === "compare")
+    ? STATE.data : { ...STATE.data, report: scopedReport(STATE.data) };
   $("#pageTitle").textContent = META[id][0];
   $("#pageSub").textContent = META[id][1];
   $$("#nav .nav-i").forEach((b) => b.classList.toggle("is-on", b.dataset.screen === id));
@@ -330,7 +365,7 @@ function render() {
 function setScreen(id) { if (SCREENS[id]) { STATE.screen = id; render(); } }
 
 /* ---------------------------------------------------------------- A/B terminal */
-let abRun = null;
+let abRun = null, abTimer = null;
 function abLine(route, query, tokens, kind) {
   const arrow = route ? `<span class="ar ${ROUTE[route]}">→ ${ROUTE_LBL[route]}</span>` : `<span class="ar remote">→ REMOTE</span>`;
   return `<div class="ln ${kind}"><span class="c">$</span><span class="q">${esc(query)}</span>${arrow}<span class="tok">${n0(tokens)}t</span></div>`;
@@ -341,6 +376,7 @@ function bindCompare() {
 }
 function resetAB() {
   if (abRun) { try { abRun.close(); } catch (e) {} abRun = null; }
+  if (abTimer) { clearInterval(abTimer); abTimer = null; }
   $("#bodyBefore").innerHTML = `<div class="term-empty">Press <b>Run comparison</b> to stream every task → remote model…</div>`;
   $("#bodyAfter").innerHTML = `<div class="term-empty">…and Triage routing the same tasks side by side.</div>`;
   $("#totBefore").textContent = "0"; $("#totAfter").textContent = "0";
@@ -375,7 +411,21 @@ function runAB() {
     toast(`Done — ${save.toFixed(0)}% fewer tokens, accuracy held`);
   };
 
-  // live stream via WebSocket; fall back to stepping the seed if it fails
+  // One paced queue drives the stream so the Settings "stream speed" applies to
+  // both the live WebSocket and the seed fallback.
+  const q = []; let streamDone = false, summaryAcc = null;
+  abTimer = setInterval(() => {
+    if (q.length) { const it = q.shift(); onDecision(it.d, it.query); }
+    else if (streamDone) { clearInterval(abTimer); abTimer = null; finish(summaryAcc); }
+  }, STATE.streamMs);
+
+  const seedFill = () => {
+    const decs = STATE.data.report.decisions;
+    decs.forEach((d) => q.push({ d, query: d.query }));
+    summaryAcc = STATE.data.report.accuracy; streamDone = true;
+  };
+
+  // live stream via WebSocket; fall back to the seed if it never connects
   let viaWS = false;
   try {
     const proto = location.protocol === "https:" ? "wss" : "ws";
@@ -384,28 +434,21 @@ function runAB() {
     abRun.onmessage = (ev) => {
       const m = JSON.parse(ev.data);
       if (m.type === "start") { n = m.n_tasks; }
-      else if (m.type === "decision") { onDecision(m.decision, m.query || m.decision.query); }
-      else if (m.type === "summary") { abRun = null; finish(m.accuracy); }
+      else if (m.type === "decision") { q.push({ d: m.decision, query: m.query || m.decision.query }); }
+      else if (m.type === "summary") { abRun = null; summaryAcc = m.accuracy; streamDone = true; }
     };
-    abRun.onerror = () => { if (!viaWS) stepSeed(onDecision, finish); };
-    abRun.onclose = () => { if (!viaWS && i === 0) stepSeed(onDecision, finish); };
+    abRun.onerror = () => { if (!viaWS) seedFill(); };
+    abRun.onclose = () => { if (!viaWS && i === 0 && q.length === 0 && !streamDone) seedFill(); };
   } catch (e) {
-    stepSeed(onDecision, finish);
+    seedFill();
   }
-}
-function stepSeed(onDecision, finish) {
-  const decs = STATE.data.report.decisions;
-  let k = 0;
-  const iv = setInterval(() => {
-    if (k >= decs.length) { clearInterval(iv); finish(STATE.data.report.accuracy); return; }
-    const d = decs[k++]; onDecision(d, d.query);
-  }, 130);
 }
 
 /* ---------------------------------------------------------------- routing controls */
 let tFilter = "all", tQuery = "";
 function tableRows() {
   const decs = STATE.data.report.decisions
+    .filter((d) => STATE.tier === "all" || tierOf(d) === STATE.tier)
     .filter((d) => tFilter === "all" || d.route === tFilter)
     .filter((d) => !tQuery || d.query.toLowerCase().includes(tQuery));
   const body = $("#tBody"); if (!body) return;
@@ -471,22 +514,65 @@ function toast(msg) {
   const t = $("#toast"); t.textContent = msg; t.classList.add("show");
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), 2600);
 }
+/* ---------------------------------------------------------- settings/theme */
+const PREFS_KEY = "triage.settings";
+const ACCENTS = { blue: ["#5b8cff", "#3b6ef5"], violet: ["#a78bfa", "#8b5cf6"], cyan: ["#38bdf8", "#0ea5e9"], green: ["#34d399", "#10b981"] };
+const SPEEDS = { slow: 220, normal: 130, fast: 60 };
+let PREFS = { theme: "dark", hc: false, motion: true, accent: "blue", speed: "normal" };
+
+function loadPrefs() { try { Object.assign(PREFS, JSON.parse(localStorage.getItem(PREFS_KEY) || "{}")); } catch (e) {} }
+function savePrefs() { try { localStorage.setItem(PREFS_KEY, JSON.stringify(PREFS)); } catch (e) {} }
+function applyPrefs() {
+  document.documentElement.dataset.theme = PREFS.theme;
+  document.body.classList.toggle("hc", !!PREFS.hc);
+  document.body.classList.toggle("reduce-motion", !PREFS.motion);
+  const a = ACCENTS[PREFS.accent] || ACCENTS.blue;
+  document.documentElement.style.setProperty("--accent", a[0]);
+  document.documentElement.style.setProperty("--accent-2", a[1]);
+  STATE.streamMs = SPEEDS[PREFS.speed] || 130;
+  syncSettingsUI();
+}
+function syncSettingsUI() {
+  $$("[data-theme-set]").forEach((b) => b.classList.toggle("on", b.dataset.themeSet === PREFS.theme));
+  $$("[data-accent]").forEach((b) => b.classList.toggle("on", b.dataset.accent === PREFS.accent));
+  $$("[data-speed]").forEach((b) => b.classList.toggle("on", b.dataset.speed === PREFS.speed));
+  const hc = $("#set-hc"); if (hc) hc.classList.toggle("on", !!PREFS.hc);
+  const mo = $("#set-motion"); if (mo) mo.classList.toggle("on", !!PREFS.motion);
+}
+function openSettings() { $("#settings").classList.add("open"); $("#scrim").classList.add("on"); }
+function closeSettings() { $("#settings").classList.remove("open"); $("#scrim").classList.remove("on"); }
+
 function bindChrome() {
   $("#nav").addEventListener("click", (e) => {
     const b = e.target.closest(".nav-i"); if (b) setScreen(b.dataset.screen);
   });
   document.addEventListener("click", (e) => {
-    const r = e.target.closest("[data-range]");
-    if (r) { $("#rangeLbl").textContent = r.dataset.range; r.closest("details").open = false; toast("Range: " + r.dataset.range); return; }
+    const tier = e.target.closest("[data-tier]");
+    if (tier) { STATE.tier = tier.dataset.tier; $("#tierLbl").textContent = tier.dataset.label; tier.closest("details").open = false; render(); return; }
+
+    if (e.target.closest("#settingsBtn")) { e.preventDefault(); const dd = e.target.closest("details"); if (dd) dd.open = false; openSettings(); return; }
+    if (e.target.closest("#closeSettings") || e.target.closest("#scrim")) { closeSettings(); return; }
+
+    const tset = e.target.closest("[data-theme-set]");
+    if (tset) { PREFS.theme = tset.dataset.themeSet; applyPrefs(); savePrefs(); return; }
+    const acc = e.target.closest("[data-accent]");
+    if (acc) { PREFS.accent = acc.dataset.accent; applyPrefs(); savePrefs(); return; }
+    const sp = e.target.closest("[data-speed]");
+    if (sp) { PREFS.speed = sp.dataset.speed; applyPrefs(); savePrefs(); return; }
+    if (e.target.closest("#set-hc")) { PREFS.hc = !PREFS.hc; applyPrefs(); savePrefs(); return; }
+    if (e.target.closest("#set-motion")) { PREFS.motion = !PREFS.motion; applyPrefs(); savePrefs(); return; }
+
     const th = e.target.closest("#themeBtn");
-    if (th) { document.body.classList.toggle("hc"); th.closest("details").open = false; toast("Contrast toggled"); return; }
-    // close any open <details> menu when clicking outside it
+    if (th) { PREFS.hc = !PREFS.hc; applyPrefs(); savePrefs(); th.closest("details").open = false; toast("Contrast " + (PREFS.hc ? "on" : "off")); return; }
+
     $$("details.menu[open]").forEach((d) => { if (!d.contains(e.target)) d.open = false; });
   });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSettings(); });
 }
 
 /* ---------------------------------------------------------------- boot */
 function boot() {
+  loadPrefs(); applyPrefs();                   // theme/accent applied before first paint
   bindChrome();
   render();                                   // seed-first: full page paints now
   fetch("/api/latest").then((r) => r.json()).then((d) => {

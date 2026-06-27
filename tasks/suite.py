@@ -6,7 +6,8 @@ from __future__ import annotations
 from core.types import Task
 from tasks.edge_cases import load_edge_cases
 from tasks.samples import load_tasks
+from tasks.tiers import load_tiers
 
 
 def load_suite() -> list[Task]:
-    return load_tasks() + load_edge_cases()
+    return load_tasks() + load_edge_cases() + load_tiers()

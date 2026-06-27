@@ -19,6 +19,8 @@ router:
   easy_threshold: 0.30       # predicted difficulty <= -> trust local
   hard_threshold: 0.80       # predicted difficulty >= -> straight to remote
   escalate_threshold: 0.65   # calibrated operating point (cheapest >= target accuracy)
+  self_consistency_samples: 3  # low-confidence local answer? vote over 3 local draws
+  consistency_accept: 0.75     # accept local only on unanimous agreement (saves remote calls)
 
 cost:                        # remote-only by default; flip local weights >0 if
   w_remote_prompt: 1.0       # scoring counts total tokens

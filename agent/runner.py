@@ -27,6 +27,25 @@ class RunReport:
     n_correct: int
     n_tasks: int
     decisions: list[dict] = field(default_factory=list)
+    # per-tier accuracy: {"easy": {"n", "n_correct", "accuracy"}, ...}
+    tier_stats: dict[str, dict] = field(default_factory=dict)
+
+
+def tier_of(task: Task) -> str:
+    """Difficulty bucket. Honors an explicit meta['tier'] (the graded suite),
+    otherwise derives it from ground-truth difficulty."""
+    t = task.meta.get("tier")
+    if t in ("easy", "medium", "hard"):
+        return t
+    d = task.difficulty
+    return "easy" if d < 0.34 else "medium" if d < 0.67 else "hard"
+
+
+def decision_dict(task: Task, d: Decision) -> dict:
+    """Decision as a dict, tagged with its difficulty tier for the dashboard filter."""
+    dd = d.as_dict()
+    dd["tier"] = tier_of(task)
+    return dd
 
 
 def iter_decisions(router: Router, tasks: list[Task]) -> Iterator[Decision]:
@@ -36,8 +55,24 @@ def iter_decisions(router: Router, tasks: list[Task]) -> Iterator[Decision]:
         yield d
 
 
+def _tier_stats(pairs: list[tuple[Task, Decision]]) -> dict[str, dict]:
+    out: dict[str, dict] = {}
+    for task, d in pairs:
+        st = out.setdefault(tier_of(task), {"n": 0, "n_correct": 0, "accuracy": 0.0})
+        st["n"] += 1
+        st["n_correct"] += int(bool(d.correct))
+    for st in out.values():
+        st["accuracy"] = st["n_correct"] / st["n"] if st["n"] else 0.0
+    return out
+
+
 def run(router: Router, tasks: list[Task]) -> RunReport:
-    decisions = list(iter_decisions(router, tasks))
+    pairs: list[tuple[Task, Decision]] = []
+    for task in tasks:
+        d = router.run(task)
+        d.correct = evaluate(task.type, d.answer, task.gold)
+        pairs.append((task, d))
+    decisions = [d for _, d in pairs]
     n = len(decisions)
     n_correct = sum(1 for d in decisions if d.correct)
     total_cost = sum(d.cost for d in decisions)
@@ -54,5 +89,6 @@ def run(router: Router, tasks: list[Task]) -> RunReport:
         routes=dict(Counter(d.route for d in decisions)),
         n_correct=n_correct,
         n_tasks=n,
-        decisions=[d.as_dict() for d in decisions],
+        decisions=[decision_dict(t, d) for t, d in pairs],
+        tier_stats=_tier_stats(pairs),
     )

@@ -49,7 +49,7 @@ def latest():
 
 @app.get("/api/run")
 def run_once(escalate: Optional[float] = None, cache: Optional[bool] = None,
-            compression: Optional[str] = None):
+            compression: Optional[str] = None, samples: Optional[int] = None):
     """Re-run the suite with live overrides — powers the interactive Routing Rules
     controls. Cheap (small suite), so it's fine to call on a slider drag (debounced)."""
     cfg = _cfg()
@@ -59,6 +59,8 @@ def run_once(escalate: Optional[float] = None, cache: Optional[bool] = None,
         cfg.cache.enabled = cache
     if compression is not None:
         cfg.compression.backend = compression
+    if samples is not None:
+        cfg.router.self_consistency_samples = max(1, min(7, samples))
     report = runner.run(build_router(cfg), load_suite())
     return dataclasses.asdict(report)
 
@@ -83,7 +85,7 @@ async def live(ws: WebSocket):
             total_cost += d.cost
             baseline += d.baseline_cost
             await ws.send_json({"type": "decision", "i": i, "query": task.query,
-                                "decision": d.as_dict()})
+                                "decision": runner.decision_dict(task, d)})
             await asyncio.sleep(0.12)  # let the UI animate; remove for raw speed
 
         await ws.send_json({"type": "summary",
