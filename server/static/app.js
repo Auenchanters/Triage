@@ -19,7 +19,7 @@ const n0 = (n) => Math.round(n).toLocaleString();
 const ROUTE = { local: "local", "local->remote": "esc", remote: "remote", cache: "cache" };
 const ROUTE_LBL = { local: "LOCAL", "local->remote": "LOCAL→REMOTE", remote: "REMOTE", cache: "CACHE" };
 
-let STATE = { data: SEED, screen: "overview", busy: false, tier: "all", streamMs: 130 };
+let STATE = { data: SEED, screen: "overview", busy: false, tier: "all", streamMs: 130, still: false };
 
 /* normalize either {report,calibration,config} or a bare RunReport dict */
 function normalize(d) {
@@ -60,6 +60,7 @@ function scopedReport(d) {
 
 /* rAF count-up — sets el text from 0 → target */
 function countUp(el, target, { dur = 900, dec = 0, suf = "", pre = "" } = {}) {
+  if (STATE.still) { el.textContent = pre + target.toFixed(dec) + suf; return; }  // capture: snap to final
   const t0 = performance.now();
   const step = (t) => {
     const k = clamp((t - t0) / dur, 0, 1);
@@ -357,12 +358,17 @@ function render() {
   page.scrollTop = 0;
   // post-render: count-ups + bar fills
   $$("[data-cu]", page).forEach((el) => countUp(el, +el.dataset.cu, { dec: +el.dataset.dec || 0, suf: el.dataset.suf || "" }));
-  requestAnimationFrame(() => $$(".bar > i[data-w]", page).forEach((i) => { i.style.width = i.dataset.w + "%"; }));
+  if (STATE.still) $$(".bar > i[data-w]", page).forEach((i) => { i.style.width = i.dataset.w + "%"; });
+  else requestAnimationFrame(() => $$(".bar > i[data-w]", page).forEach((i) => { i.style.width = i.dataset.w + "%"; }));
   if (id === "compare") bindCompare();
   if (id === "routing") bindRouting();
 }
 
-function setScreen(id) { if (SCREENS[id]) { STATE.screen = id; render(); } }
+function setScreen(id) {
+  if (!SCREENS[id]) return;
+  STATE.screen = id; render();
+  if (("#" + id) !== location.hash) history.replaceState(null, "", "#" + id);  // deep-linkable screens
+}
 
 /* ---------------------------------------------------------------- A/B terminal */
 let abRun = null, abTimer = null;
@@ -568,13 +574,45 @@ function bindChrome() {
 }
 
 /* ---------------------------------------------------------------- boot */
+// ponytail: capture-only — fills the A/B terminals to the first k decisions so the
+// README GIF can be stitched from deterministic single-shot screenshots (?abN=k).
+function captureAB(k) {
+  const decs = STATE.data.report.decisions.slice(0, k);
+  const bB = $("#bodyBefore"), bA = $("#bodyAfter"); if (!bB) return;
+  let tB = 0, tA = 0;
+  bB.innerHTML = ""; bA.innerHTML = "";
+  decs.forEach((d) => {
+    const base = d.baseline_cost || 0, routed = d.cost || 0; tB += base; tA += routed;
+    bB.insertAdjacentHTML("beforeend", abLine(null, d.query, base, "am"));
+    bA.insertAdjacentHTML("beforeend", abLine(d.route, d.query, routed, routed ? "am" : "gl"));
+  });
+  bB.scrollTop = bB.scrollHeight; bA.scrollTop = bA.scrollHeight;
+  $("#totBefore").textContent = n0(tB); $("#totAfter").textContent = n0(tA);
+}
+
+function applyRoute() {
+  const id = (location.hash || "").replace("#", "");
+  if (SCREENS[id]) setScreen(id);
+  const qs = new URLSearchParams(location.search);
+  if (qs.get("still") === "1" && !STATE.still) {   // capture-only: snap animations to final
+    STATE.still = true; document.body.classList.add("reduce-motion"); render();
+  }
+  const theme = qs.get("theme");
+  if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;  // capture-only
+  const k = +qs.get("abN");
+  if (k && STATE.screen === "compare") captureAB(k);
+  if (qs.get("settings") === "1") openSettings();   // capture-only: drawer screenshot
+}
+
 function boot() {
   loadPrefs(); applyPrefs();                   // theme/accent applied before first paint
   bindChrome();
   render();                                   // seed-first: full page paints now
+  applyRoute();                               // honor #screen deep-links (and ?abN capture)
+  window.addEventListener("hashchange", applyRoute);
   fetch("/api/latest").then((r) => r.json()).then((d) => {
     const nd = normalize(d);
-    if (nd) { STATE.data = nd; render(); }     // enhance with the real run if present
+    if (nd) { STATE.data = nd; render(); applyRoute(); }  // enhance with the real run if present
   }).catch(() => { /* offline — seed render stands */ });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);

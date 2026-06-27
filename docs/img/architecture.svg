@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" font-family="'IBM Plex Sans','Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0d12"/>
+      <stop offset="1" stop-color="#0c1119"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.1" r="0.6">
+      <stop offset="0" stop-color="#0C5CAB" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#0C5CAB" stop-opacity="0"/>
+    </radialGradient>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0 0 L6 3 L0 6 Z" fill="#5b8cff"/>
+    </marker>
+    <style>
+      .stage{fill:#11161d;stroke:#1e2630;stroke-width:1.5;rx:14}
+      .num{fill:#5b8cff;font-size:13px;font-weight:700}
+      .title{fill:#fafafa;font-size:17px;font-weight:600}
+      .sub{fill:#8b95a5;font-size:12.5px}
+      .flow{stroke:#5b8cff;stroke-width:2;fill:none}
+      .lab{fill:#8b95a5;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+    </style>
+  </defs>
+
+  <rect width="1200" height="460" fill="url(#bg)"/>
+  <rect width="1200" height="460" fill="url(#glow)"/>
+
+  <!-- header -->
+  <text x="48" y="56" fill="#fafafa" font-size="26" font-weight="700">Triage — hybrid routing pipeline</text>
+  <text x="48" y="82" fill="#8b95a5" font-size="14">Each task flows cheapest-tier-first; every stage is cheaper than escalating to the next.</text>
+
+  <!-- pipeline stages -->
+  <g transform="translate(48,120)">
+    <!-- 1 cache -->
+    <rect class="stage" x="0"   y="0" width="196" height="104" rx="14"/>
+    <text class="num"   x="18"  y="30">01</text>
+    <text class="title" x="18"  y="54">Cache</text>
+    <text class="sub"   x="18"  y="76">exact + semantic</text>
+    <text class="sub"   x="18"  y="93">repeats → 0 remote tokens</text>
+
+    <!-- 2 predict -->
+    <rect class="stage" x="232" y="0" width="196" height="104" rx="14"/>
+    <text class="num"   x="250" y="30">02</text>
+    <text class="title" x="250" y="54">Predict</text>
+    <text class="sub"   x="250" y="76">difficulty heuristics</text>
+    <text class="sub"   x="250" y="93">obvious cases routed</text>
+
+    <!-- 3 local+confidence -->
+    <rect class="stage" x="464" y="0" width="196" height="104" rx="14"/>
+    <text class="num"   x="482" y="30">03</text>
+    <text class="title" x="482" y="54">Local + confidence</text>
+    <text class="sub"   x="482" y="76">run local, score logprobs</text>
+    <text class="sub"   x="482" y="93">self-consistency vote</text>
+
+    <!-- 4 escalate -->
+    <rect class="stage" x="696" y="0" width="196" height="104" rx="14"/>
+    <text class="num"   x="714" y="30">04</text>
+    <text class="title" x="714" y="54">Escalate</text>
+    <text class="sub"   x="714" y="76">remote only if below</text>
+    <text class="sub"   x="714" y="93">the calibrated bar</text>
+
+    <!-- 5 compress -->
+    <rect class="stage" x="928" y="0" width="196" height="104" rx="14"/>
+    <text class="num"   x="946" y="30">05</text>
+    <text class="title" x="946" y="54">Compress</text>
+    <text class="sub"   x="946" y="76">billed path only</text>
+    <text class="sub"   x="946" y="93">heuristic / LLMLingua-2</text>
+
+    <!-- arrows -->
+    <path class="flow" d="M196 52 L232 52" marker-end="url(#ar)"/>
+    <path class="flow" d="M428 52 L464 52" marker-end="url(#ar)"/>
+    <path class="flow" d="M660 52 L696 52" marker-end="url(#ar)"/>
+    <path class="flow" d="M892 52 L928 52" marker-end="url(#ar)"/>
+  </g>
+
+  <!-- tiers band -->
+  <g transform="translate(48,288)">
+    <rect x="0" y="0" width="1104" height="128" rx="14" fill="#0d1219" stroke="#1e2630" stroke-width="1.5"/>
+
+    <text class="lab" x="24" y="34">Local tier — cheap path</text>
+    <rect x="24" y="48" width="300" height="56" rx="10" fill="#11161d" stroke="#21402f" stroke-width="1.5"/>
+    <circle cx="50" cy="76" r="6" fill="#34d399"/>
+    <text x="68" y="72" fill="#fafafa" font-size="15" font-weight="600">AMD GPU · ROCm / vLLM</text>
+    <text x="68" y="92" fill="#8b95a5" font-size="12.5">OpenAI-compatible · token weight 0</text>
+
+    <text class="lab" x="780" y="34" text-anchor="start">Remote tier — escalation</text>
+    <rect x="780" y="48" width="300" height="56" rx="10" fill="#11161d" stroke="#3a2e1a" stroke-width="1.5"/>
+    <circle cx="806" cy="76" r="6" fill="#f5b54a"/>
+    <text x="824" y="72" fill="#fafafa" font-size="15" font-weight="600">Fireworks AI</text>
+    <text x="824" y="92" fill="#8b95a5" font-size="12.5">frontier model · the exception, not the rule</text>
+
+    <!-- calibration note center -->
+    <text x="552" y="60" fill="#5b8cff" font-size="13" font-weight="700" text-anchor="middle">CALIBRATION</text>
+    <text x="552" y="82" fill="#cdd5e0" font-size="12.5" text-anchor="middle">sweep the escalation threshold,</text>
+    <text x="552" y="99" fill="#cdd5e0" font-size="12.5" text-anchor="middle">pick the cheapest point ≥ accuracy bar</text>
+  </g>
+</svg>
