@@ -9,9 +9,11 @@
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import json
 import os
 from pathlib import Path
+from typing import Optional
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,6 +45,22 @@ def latest():
     if not p.exists():
         return {"error": "no run yet — run `python -m eval.harness` first"}
     return json.loads(p.read_text(encoding="utf-8"))
+
+
+@app.get("/api/run")
+def run_once(escalate: Optional[float] = None, cache: Optional[bool] = None,
+            compression: Optional[str] = None):
+    """Re-run the suite with live overrides — powers the interactive Routing Rules
+    controls. Cheap (small suite), so it's fine to call on a slider drag (debounced)."""
+    cfg = _cfg()
+    if escalate is not None:
+        cfg.router.escalate_threshold = max(0.0, min(1.0, escalate))
+    if cache is not None:
+        cfg.cache.enabled = cache
+    if compression is not None:
+        cfg.compression.backend = compression
+    report = runner.run(build_router(cfg), load_suite())
+    return dataclasses.asdict(report)
 
 
 @app.websocket("/ws/live")
