@@ -562,9 +562,6 @@ function bindChrome() {
     if (e.target.closest("#set-hc")) { PREFS.hc = !PREFS.hc; applyPrefs(); savePrefs(); return; }
     if (e.target.closest("#set-motion")) { PREFS.motion = !PREFS.motion; applyPrefs(); savePrefs(); return; }
 
-    const th = e.target.closest("#themeBtn");
-    if (th) { PREFS.hc = !PREFS.hc; applyPrefs(); savePrefs(); th.closest("details").open = false; toast("Contrast " + (PREFS.hc ? "on" : "off")); return; }
-
     $$("details.menu[open]").forEach((d) => { if (!d.contains(e.target)) d.open = false; });
   });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSettings(); });

@@ -1,12 +1,10 @@
 """Run a task suite through the router, score correctness, and aggregate the numbers
-the leaderboard + dashboard care about. `iter_decisions` streams per-task results for
-the live websocket; `run` returns the full report.
+the leaderboard + dashboard care about. `run` returns the full report.
 """
 from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import Iterator
 
 from core.router import Router
 from core.types import Decision, Task
@@ -46,13 +44,6 @@ def decision_dict(task: Task, d: Decision) -> dict:
     dd = d.as_dict()
     dd["tier"] = tier_of(task)
     return dd
-
-
-def iter_decisions(router: Router, tasks: list[Task]) -> Iterator[Decision]:
-    for task in tasks:
-        d = router.run(task)
-        d.correct = evaluate(task.type, d.answer, task.gold)
-        yield d
 
 
 def _tier_stats(pairs: list[tuple[Task, Decision]]) -> dict[str, dict]:
