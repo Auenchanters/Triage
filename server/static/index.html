@@ -142,6 +142,19 @@
   </aside>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- front / loading screen: play with the sphere; click or any key enters -->
+  <div id="intro">
+    <canvas id="introCanvas" aria-hidden="true"></canvas>
+    <div class="intro-c">
+      <div class="intro-logo"><svg class="ic"><use href="#i-logo"/></svg></div>
+      <h1>TRIAGE</h1>
+      <p>Hybrid LLM Router · AMD ACT II · Track 1</p>
+      <span class="intro-hint">click anywhere or press any key to enter</span>
+    </div>
+  </div>
+
+  <script src="/sphere.js" defer></script>
   <script src="/app.js" defer></script>
 </body>
 </html>
